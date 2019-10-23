@@ -1,0 +1,32 @@
+<!--components/footbar/footbar.wxml-->
+<!-- footbar -->
+<view class='foot'>
+
+  <view class="cu-bar tabbar bg-white text-gray">
+    <view class="action {{PageCur=='detail' ? 'text-green' : ''}}" bindtap="NavChange" data-cur="detail">
+      <view class="cuIcon-recharge"></view>明细
+    </view>
+
+    <view class=" action {{PageCur=='chart' ? 'text-green' : ''}}" bindtap="NavChange" data-cur="chart">
+      <view class="cuIcon-rank"></view> 超表
+    </view>
+
+    <view class="action text-gray add-action" bindtap="toReport" wx:if="{{token}}">
+      <button class="cu-btn cuIcon-add bg-green shadow"></button>
+      记账
+    </view>
+    <view class="action text-gray add-action" bindtap="goLogin" wx:else>
+      <button class="cu-btn cuIcon-add bg-green shadow"></button>
+      记账
+    </view>
+
+    <view class="action {{PageCur=='rank' ? 'text-green' : ''}}" bindtap="NavChange" data-cur="rank">
+      <view class="cuIcon-upstage" ></view>
+      榜单
+    </view>
+    <view class="action {{PageCur=='mine' ? 'text-green' : ''}}" bindtap="NavChange" data-cur="mine">
+      <view class="cuIcon-my"></view>
+      我的
+    </view>
+  </view>
+</view>

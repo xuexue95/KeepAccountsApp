@@ -1,0 +1,95 @@
+{
+	"description": "项目配置文件",
+	"packOptions": {
+		"ignore": []
+	},
+	"setting": {
+		"urlCheck": false,
+		"es6": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true,
+		"autoAudits": false,
+		"checkInvalidKey": true
+	},
+	"compileType": "miniprogram",
+	"libVersion": "2.8.3",
+	"appid": "touristappid",
+	"projectname": "%E4%B8%80%E8%B5%B7%E8%AE%B0%E8%B4%A6",
+	"debugOptions": {
+		"hidedInDevtools": []
+	},
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"currentL": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 6,
+			"list": [
+				{
+					"id": 0,
+					"name": "accountBookSet",
+					"pathName": "pages/accountBookSet/accountBookSet",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 1,
+					"name": "accountBookAdd",
+					"pathName": "pages/accountBookAdd/accountBookAdd",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "report",
+					"pathName": "pages/report/report",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "chart",
+					"pathName": "pages/chart/chart",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "register",
+					"pathName": "pages/register/register",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "accountBookSet",
+					"pathName": "pages/accountBookSet/accountBookSet",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "accountDetail",
+					"pathName": "pages/accountDetail/accountDetail",
+					"scene": null
+				}
+			]
+		}
+	}
+}

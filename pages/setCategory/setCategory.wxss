@@ -1,0 +1,6 @@
+/* pages/setCategory/setCategory.wxss */
+.myfoot{
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}

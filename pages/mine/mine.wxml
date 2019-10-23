@@ -1,0 +1,77 @@
+<!--pages/mine/mine.wxml-->
+<scroll-view scroll-y class="scrollPage">
+  <view class="UCenter-bg" style="border:none">
+    <image src="{{userInfo.avatar_url}}" class="png" mode="aspectFill" style="border-radius:50%;" wx:if="{{token}}"></image>
+
+    <view class="text-lg" bindtap="login" wx:if='{{!token}}'>请登录
+    </view>
+    <view class="text-lg margin-top" wx:else>{{userInfo.nickname}}
+    </view>
+    <image src="/images/wave.gif" mode="scaleToFill" class="gif-wave"></image>
+  </view>
+
+  <view class="padding flex text-center text-grey bg-white">
+    <view class="flex flex-sub flex-direction solid-right">
+      <view class="text-xxl text-orange">0</view>
+      <view class="margin-top-sm">
+        <text class=""></text> 已邀请</view>
+    </view>
+    <view class="flex flex-sub flex-direction solid-right">
+      <view class="text-xxl text-blue">{{accountCount?accountCount:0}}</view>
+      <view class="margin-top-sm">
+        <text class=""></text> 总账本</view>
+    </view>
+    <view class="flex flex-sub flex-direction">
+      <view class="text-xxl text-green">0</view>
+      <view class="margin-top-sm">
+        <text class=""></text> 共记账</view>
+    </view>
+  </view>
+
+
+  <view class="cu-list menu margin-top shadow-lg">
+    <view class="cu-item arrow" bindtap="{{token?'userInfo':'login'}}">
+      <button class="cu-btn content" >
+        <text class="cuIcon-comment text-cyan"></text>
+        <text class="text-grey">个人信息</text>
+      </button>
+    </view>
+    <view class="cu-item arrow" bindtap="{{token?'changePwd':'login'}}">
+      <button class="cu-btn content" >
+        <text class="cuIcon-comment text-cyan"></text>
+        <text class="text-grey">修改密码</text>
+      </button>
+    </view>
+    <view class="cu-item arrow" bindtap="{{token?'feedback':'login'}}">
+      <button class="cu-btn content" >
+        <text class="cuIcon-comment text-cyan"></text>
+        <text class="text-grey">意见反馈</text>
+      </button>
+    </view>
+    <view class="cu-item arrow margin-top" bindtap="logOut" data-target="logOut">
+      <view class="content">
+        <text class="cuIcon-exit text-green"></text>
+        <text class="text-grey">退出登录</text>
+      </view>
+    </view>
+  </view>
+
+
+
+  <view class="cu-tabbar-height"></view>
+</scroll-view>
+
+<!-- 退出登录模态框 -->
+<view class="cu-modal {{modalName=='logOut'?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class="content">提示</view>
+      <view class="action" bindtap="hideModal">
+        <text class="cuIcon-close text-red"></text>
+      </view>
+    </view>
+    <view class="padding-xl">
+      退出成功
+    </view>
+  </view>
+</view>

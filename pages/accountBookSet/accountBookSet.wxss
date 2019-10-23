@@ -1,0 +1,6 @@
+/* pages/accountBookSet/accountBookSet.wxss */
+.foot {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}

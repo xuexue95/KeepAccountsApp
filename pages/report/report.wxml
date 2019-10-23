@@ -1,0 +1,122 @@
+<!--pages/report/report.wxml-->
+
+<cu-custom bgColor="bg-green" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">记一笔</view>
+</cu-custom>
+
+<scroll-view scroll-x class="bg-white nav text-center">
+
+  <view class="cu-item  {{index==TabCur?'text-green cur':''}}" wx:for="{{category}}" wx:key bindtap="tabSelect" data-id="{{index}}" style="padding:0 80rpx;">
+    {{category[index]}}
+
+  </view>
+</scroll-view>
+
+<block wx:if="{{TabCur==0}}">
+  <view class="cu-list grid col-4 grid-square">
+    <view class="cu-item {{index==choose ? 'bg-green':''}}" wx:for="{{expenditureList}}" wx:key bindtap="choose" data-index="{{index}}" data-target="bottomModal" data-categoryId="{{expenditureList[index].id}}" style="border:1px solid #f0f0f0;margin:0;width:25%;">
+      <text class="cuIcon-like" style="{{index==choose ? 'color:white':''}}"></text>
+      <text style="{{index==choose ? 'color:white':''}}">{{expenditureList[index].name}}</text>
+    </view>
+  </view>
+</block>
+
+<block wx:if="{{TabCur==1}}">
+  <view class="cu-list grid col-4 grid-square">
+    <view class="cu-item {{index==choose? 'bg-green':''}}" wx:for="{{incomeList}}" wx:key bindtap="choose" data-index="{{index}}" data-categoryId="{{incomeList[index].id}}" data-target="bottomModal" style="border:1px solid #f0f0f0;margin:0;width:25%;">
+      <text class="cuIcon-like" style="{{index==choose ? 'color:white':''}}"></text>
+      <text style="{{index==choose ? 'color:white':''}}">{{incomeList[index].name}}</text>
+    </view>
+  </view>
+</block>
+
+
+
+<view class="cu-modal bottom-modal {{modalName=='bottomModal'?'show':''}}">
+
+  <view class="cu-dialog">
+
+    <view class="cu-bar bg-white">
+      <view class="action text-blue" bindtap="hideModal" data-modalName="bottomModal">取消</view>
+    </view>
+
+
+    <view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg radius">
+      <view class="padding-bottom-xl text-right">
+
+        <view class="cu-form-group">
+          <view class="title">记帐金额</view>
+          <input placeholder="0.00" bindinput="setTotal_money"></input>
+        </view>
+
+        <view class="cu-form-group">
+          <view class="title">实付金额</view>
+          <input placeholder="0.00" bindinput="setMoney"></input>
+        </view>
+
+        <view class="cu-form-group">
+          <view class="title">日期选择</view>
+          <picker mode="date" value="{{date}}" start="2015-09-01" end="2020-09-01" bindchange="DateChange">
+            <view class="picker">
+              <view>{{date}}</view>
+            </view>
+          </picker>
+        </view>
+
+        <view class="cu-form-group">
+          <view class="title">交易对象</view>
+          <input placeholder="允许为空" bindinput="setCompany_name"></input>
+        </view>
+
+        <view class="cu-form-group">
+          <view class="title">备注</view>
+          <textarea class="text-right " bindinput="setRemark" placeholder="允许为空"></textarea>
+        </view>
+
+        <view class="cu-bar bg-white margin-top">
+          <view class="action">
+            图片上传
+          </view>
+          <view class="action">
+            {{imgList.length}}/4
+          </view>
+        </view>
+        <view class="cu-form-group">
+          <view class="grid col-4 grid-square flex-sub">
+            <view class="bg-img" wx:for="{{imgList}}" wx:key="{{index}}" bindtap="ViewImage" data-url="{{imgList[index]}}">
+              <image src='{{imgList[index]}}' mode='aspectFill' style="top:0;left:0;"></image>
+              <view class="cu-tag bg-red" catchtap="DelImg" data-index="{{index}}">
+                <text class="cuIcon-close"></text>
+              </view>
+            </view>
+            <view class="solids" bindtap="ChooseImage" wx:if="{{imgList.length<4}}">
+              <text class="cuIcon-cameraadd"></text>
+            </view>
+          </view>
+        </view>
+
+        <view class="flex flex-direction margin-tb">
+          <button class="cu-btn bg-green lg " bindtap="Bookkeeping" data-target="">记账</button>
+        </view>
+
+
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 模态框 -->
+<view class="cu-modal {{modalName2=='fail'?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class="content">记账失败</view>
+      <view class="action" bindtap="hideModal" data-modalName='modalName2'>
+        <text class="cuIcon-close text-red"></text>
+      </view>
+    </view>
+    <view class="padding-xl">
+      {{modalContent}}
+    </view>
+  </view>
+</view>

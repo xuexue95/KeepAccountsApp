@@ -1,0 +1,137 @@
+<!--pages/billDetail/billDetail.wxml-->
+<cu-custom bgColor="bg-green" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">账单详情</view>
+</cu-custom>
+
+<view class="padding-lr margin-top" wx:if="{{!Cur}}">
+  <view class="cu-form-group">
+    <view class="title">用户</view>
+    <input class="text-right" disabled="true" placeholder="{{username}}"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">类型</view>
+    <input class="text-right" disabled="true" placeholder="{{detail.type_string}}"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">类别</view>
+    <input class="text-right" disabled="true" placeholder="{{detail.category_name}}"></input>
+  </view>
+  <view class="cu-form-group margin-top">
+    <view class="title">金额</view>
+    <input class="text-right" disabled="true" placeholder="{{total_money}}"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">交易对象</view>
+    <input class="text-right" disabled="true" placeholder="{{company_name}}"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">备注</view>
+    <input class="text-right" disabled="true" placeholder="{{remark}}"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">日期</view>
+    <input class="text-right" disabled="true" placeholder="{{date}}"></input>
+  </view>
+
+  <view class="cu-bar bg-white margin-top">
+		<view class="action">
+			图片
+		</view>
+		<view class="action">
+			{{imgList.length}}/4
+		</view>
+	</view>
+	<view class="cu-form-group">
+		<view class="grid col-4 grid-square flex-sub">
+			<view class="bg-img" wx:for="{{imgList}}" wx:key="{{index}}" bindtap="ViewImage" data-url="{{item}}">
+				<image src='{{item}}' mode='aspectFill'></image>
+			</view>
+		</view>
+	</view>
+</view>
+
+
+<view class="padding-lr margin-top" wx:else>
+  <view class="cu-form-group">
+    <view class="title">用户</view>
+    <input class="text-right" disabled="true" placeholder="{{username}}"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">类型</view>
+    <input class="text-right" disabled="true" placeholder="{{detail.type_string}}"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">类别</view>
+    <input class="text-right" disabled="true" placeholder="{{detail.category_name}}"></input>
+  </view>
+  <view class="cu-form-group margin-top">
+    <view class="title">金额</view>
+    <input class="text-right"  value="{{total_money}}" bindinput="moneyInput"></input>
+  </view>
+   <view class="cu-form-group">
+    <view class="title">交易对象</view>
+    <input class="text-right" value="{{company_name}}" bindinput="companyInput"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">备注</view>
+    <input class="text-right"  value="{{remark}}" bindinput="remarkInput"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">日期</view>
+    <input class="text-right" value="{{date}}" bindinput="dateInput"></input>
+  </view>
+
+  <view class="cu-bar bg-white margin-top">
+		<view class="action">
+			添加图片
+		</view>
+		<view class="action">
+			{{imgList.length}}/4
+		</view>
+	</view>
+	<view class="cu-form-group">
+		<view class="grid col-4 grid-square flex-sub">
+			<view class="bg-img" wx:for="{{imgList}}" wx:key="{{index}}" bindtap="ViewImage" data-url="{{item}}">
+				<image src='{{item}}' mode='aspectFill'></image>
+				<view class="cu-tag bg-red" catchtap="DelImg" data-index="{{index}}">
+					<text class="cuIcon-close"></text>
+				</view>
+			</view>
+			<view class="solids" bindtap="ChooseImage" wx:if="{{imgList.length<4}}">
+				<text class="cuIcon-cameraadd"></text>
+			</view>
+		</view>
+	</view>
+</view>
+
+
+<view class='foot padding flex bg-white'>
+  <view class='flex-sub text-center  '>
+    <button class="cu-btn block line-green" bindtap="changeCur" wx:if="{{!Cur}}">
+      <text class='cuIcon-post margin-lr-xs'></text>编辑</button>
+    <button class="cu-btn block line-green" bindtap="saveEdit" wx:else>
+      <text class='cuIcon-post margin-lr-xs'></text>保存</button>
+  </view>
+  <view class='flex-sub  text-center margin-lr-xs'>
+    <button class="cu-btn block line-green" bindtap="delete">
+      <text class='cuIcon-delete'></text>删除</button>
+  </view>
+</view>
+
+
+
+<!-- 模态框 -->
+<view class="cu-modal {{modalName=='fail'?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class="content">修改失败</view>
+      <view class="action" bindtap="hideModal">
+        <text class="cuIcon-close text-red"></text>
+      </view>
+    </view>
+    <view class="padding-xl">
+      {{modalContent}}
+    </view>
+  </view>
+</view>

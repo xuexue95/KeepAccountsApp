@@ -1,0 +1,21 @@
+<!--pages/rank/rank.wxml-->
+<!-- navbar -->
+<view class="cu-custom" style="height:{{CustomBar}}px">
+  <view class="cu-bar fixed bg-green" style="height:{{CustomBar}}px;padding-top:{{StatusBar}}px;">
+
+    <view class="action" bindtap="showModal" data-target="DrawerModalL">
+      <text class="cuIcon-share padding-left-xs" style='font-size:35rpx;'></text>
+    </view>
+
+    <view class="content" style="top:{{StatusBar}}px">
+      影响力
+    </view>
+  </view>
+</view>
+
+
+<scroll-view scroll-x class="bg-green nav text-center">
+  <view class="text-sm cu-item {{index==TabCur?'text-white cur':''}}" wx:for="{{category}}" wx:key bindtap="tabSelect" data-id="{{index}}" style="padding:0 80rpx">
+    {{category[index]}}
+  </view>
+</scroll-view>

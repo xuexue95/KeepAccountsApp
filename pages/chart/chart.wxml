@@ -1,0 +1,89 @@
+<!--pages/chart/chart.wxml-->
+<!-- top -->
+<view class="cu-custom" style="height:{{CustomBar}}px">
+  <view class="cu-bar fixed bg-green" style="height:{{CustomBar}}px;padding-top:{{StatusBar}}px;">
+    <view class="action" bindtap="showModal" data-target="DrawerModalL">
+      <text class="cuIcon-searchlist padding-left-xs" style='font-size:44rpx;'></text>
+    </view>
+    <view class="content" style="top:{{StatusBar}}px">
+      <view class="cu-tag line-white bg-white" style="margin:0;">
+      <text class="text-black">支出</text>
+    </view>
+    <view class="cu-tag line-white" style="margin:0">
+    <text class="text-white">收入</text></view>
+    </view>
+  </view>
+</view>
+
+<!-- 抽屉栏 -->
+<view class="cu-modal drawer-modal justify-start {{modalName=='DrawerModalL'?'show':''}}" bindtap="hideModal" style="top:{{CustomBar}}px;">
+  <view class="cu-dialog basis-lg" catchtap>
+    <view class="cu-list menu text-left">
+
+      <view class="cu-bar solid-bottom">
+        <view class='action text-grey'>
+          <text class='cuIcon-titles text-green'></text>选择账本
+        </view>
+      </view>
+
+      <view class="cu-item arrow">
+        <view class="content">
+          <view>
+            <text class='cuIcon-my text-green'>个人账本</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="cu-bar solid-bottom">
+        <view class='action text-grey'>
+          <text class='cuIcon-titles text-green'></text>选择图形
+        </view>
+      </view>
+
+      <radio-group class="block">
+        <view class="cu-form-group">
+          <view class="title">圆饼图</view>
+          <radio checked></radio>
+        </view>
+        <view class="cu-form-group">
+          <view class="title">折线图</view>
+          <radio></radio>
+        </view>
+        <view class="cu-form-group">
+          <view class="title">柱状图</view>
+          <radio></radio>
+        </view>
+      </radio-group>
+
+      <view class='foot'>
+        <view class='padding-xs .foot margin-bottom flex'>
+          <view class='flex-sub text-center margin-lr-xs'>
+            <!-- <navigator url="../accountBookSet/accountBookSet" open-type="redirect" > -->
+            <button class="cu-btn block line-green" bindtap="">
+              <text class='cuIcon-close margin-lr-xs'></text>关闭</button>
+            <!-- </navigator> -->
+          </view>
+
+          <view class='flex-sub  text-center margin-lr-xs'>
+            <!-- <navigator url="/pages/accountBookAdd/accountBookAdd" open-type="navigate"> -->
+            <button class="cu-btn  block line-green " bindtap="">
+              <text class='cuIcon-check margin-lr-xs'></text>确认</button>
+            <!-- </navigator> -->
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<scroll-view scroll-x class="bg-green nav text-center">
+  <view class="text-sm cu-item {{index==TabCur?'text-white cur':''}}" wx:for="{{category}}" wx:key bindtap="tabSelect" data-id="{{index}}" style="padding:0 80rpx">
+    {{category[index]}}
+  </view>
+</scroll-view>
+
+<scroll-view scroll-x class="bg-white nav" scroll-with-animation scroll-left="{{scrollLeft}}">
+  <view class="cu-item {{index==TabCurDetail?'text-green cur':''}}" wx:for="{{12}}" wx:key bindtap="tabSelectDetail" data-id="{{index}}">
+    Tab{{index}}
+  </view>
+</scroll-view>

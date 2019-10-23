@@ -1,0 +1,112 @@
+<!--pages/detail/detail.wxml-->
+
+<!-- navbar -->
+
+<view class="cu-custom" style="height:{{CustomBar}}px">
+  <view class="cu-bar fixed bg-green" style="height:{{CustomBar}}px;padding-top:{{StatusBar}}px;">
+
+    <view class="action" bindtap="showModal" data-target="DrawerModalL" wx:if="{{token}}">
+      <text class="iconfont icon-studioslist margin-left-xs" style='font-size:25rpx;'></text>
+    </view>
+
+    <view class="action" bindtap="goLogin" data-target="DrawerModalL" wx:else>
+      <text class="iconfont icon-studioslist margin-left-xs" style='font-size:25rpx;'></text>
+    </view>
+
+
+    <view class="content" style="top:{{StatusBar}}px">
+      一起记账
+    </view>
+  </view>
+</view>
+
+
+
+<!-- 抽屉栏 -->
+<view class="cu-modal drawer-modal justify-start {{modalName=='DrawerModalL'?'show':''}}" bindtap="hideModal" style="top:{{CustomBar}}px;">
+  <view class="cu-dialog basis-lg" catchtap>
+    <view class="cu-list menu text-left">
+      <view class="cu-bar solid-bottom">
+        <view class='action text-grey'>
+          <text class='cuIcon-titles text-orange'></text> 查看账户名明细
+        </view>
+      </view>
+    </view>
+    <scroll-view scroll-y style="height:{{scrollHeight}}px;">
+      <view class="cu-list menu text-left">
+        <view class="cu-item arrow" wx:for="{{accountList}}" wx:key bindtap="chooseAccount" data-id="{{accountList[index].id}}">
+          <view class="content">
+            <view class="{{accountList[index].id == accountId ?'text-green':''}}">
+              <text class='cuIcon-my text-green margin-right-sm'></text>{{accountList[index].name}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <view class='padding-sm .foot margin-bottom'>
+      <button class="cu-btn block line-green " bindtap="toAccBookSet">
+        <text class='cuIcon-settings margin-lr-xs'></text>账户设置</button>
+    </view>
+  </view>
+</view>
+
+<!-- 收入支出记录 -->
+<view class='flex bg-green padding-top-sm padding-bottom-xs'>
+
+  <!-- 时间选择 -->
+  <view class='flex-sub padding-lr-lg'>
+    <picker mode="date" value="{{data}}" fields="month" start="2019-01" end="2022-01" bindchange="DateChange">
+      <view class="picker">
+        <view class='margin-tb-xs text-sm'>{{year}}年</view>
+        <view class=' margin-tb-sm'>
+          <text class='text-xxl'>{{month}}</text>
+          <text class='text-sm'> 月</text>
+          <text class='cuIcon-triangledownfill' style='font-size:40rpx;'></text>
+        </view>
+      </view>
+    </picker>
+  </view>
+
+  <!-- 收入 -->
+  <view class='flex-sub padding-lr-lg'>
+    <view class='margin-tb-xs text-sm'>收入</view>
+    <view class=' margin-tb-sm'>
+      <text class='text-xxl'>{{money.inMoneyInteger}}</text>
+      <text class=''>.{{money.inMoneyDecimal}}</text>
+    </view>
+  </view>
+
+  <!-- 支出 -->
+  <view class='flex-sub padding-lr-lg'>
+    <view class='margin-tb-xs text-sm'>支出</view>
+    <view class=' margin-tb-sm'>
+      <text class='text-xxl'>{{money.outMoneyInteger}}</text>
+      <text class=''>.{{money.outMoneyDecimal}}</text>
+    </view>
+  </view>
+</view>
+
+<!-- 选项 -->
+<view class='flex bg-white text-xl text-center text-grey'>
+  <view class='margin-tb-sm flex-sub' bindtap="toSetCategory" wx:if="{{token}}">
+    <text class='cuIcon-apps'></text>
+  </view>
+
+  <view class='margin-tb-sm flex-sub' bindtap="goLogin" wx:else>
+    <text class='cuIcon-apps'></text>
+  </view>
+
+  <view class='margin-tb-sm flex-sub'>
+    <text class='cuIcon-calendar'></text>
+  </view>
+  <view class='margin-tb-sm flex-sub'>
+    <text class='iconfont icon-pie'></text>
+  </view>
+  <view class='margin-tb-sm flex-sub'>
+    <text class='iconfont icon-zhexiantu'></text>
+  </view>
+  <view class='margin-tb-sm flex-sub'>
+    <text class='iconfont icon-zhuzhuangtu' style='font-weight:500;'></text>
+  </view>
+</view>
+

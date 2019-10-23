@@ -1,0 +1,74 @@
+<!--pages/register/register.wxml-->
+
+<!-- navbar -->
+<cu-custom bgColor="bg-green" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">用户注册</view>
+</cu-custom>
+
+<!-- 表单 -->
+<view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg radius">
+  <view class="cu-form-group  ">
+    <view class="title">昵称</view>
+    <input placeholder="请输入昵称" bindinput="setNickname"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">手机号</view>
+    <input placeholder="请输入手机号" bindinput='setPhoneNum'></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">密码</view>
+    <input placeholder="请输入密码" password="true" bindinput="setPwd"></input>
+  </view>
+  <view class="cu-form-group" style="height:55px">
+    <view class="title">图片验证码</view>
+    <input placeholder="获取验证码" value="{{captcha_code}}" bindinput='setCaptcha'></input>
+    <image src="{{imgUrl}}" mode="aspectFit" style="width:20%;" bindtap="getCaptcha"></image>
+    <button class="cu-btn bg-green shadow" bindtap="getCaptcha">显示</button>
+  </view>
+
+
+  <view class="cu-form-group" style="height:55px">
+    <view class="title">短信验证码</view>
+    <input placeholder="获取验证码" value="{{verify}}" bindinput='setVerify'></input>
+    <button class="cu-btn bg-green shadow" bindtap="getVerify" data-target="verify">获取</button>
+  </view>
+</view>
+<view class=" flex flex-direction margin-lr" >
+  <button class="cu-btn bg-green lg" bindtap="register" data-target="register">注册</button>
+</view>
+
+<!-- 短信验证码模态框 -->
+<view class="cu-modal {{modalName=='verify'?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class="content">短信验证码</view>
+      <view class="action" bindtap="hideModal">
+        <text class="cuIcon-close text-red"></text>
+      </view>
+    </view>
+    <view class="padding-xl">
+      {{modalContent}}
+    </view>
+  </view>
+</view>
+
+<!-- 注册模态框 -->
+<view class="cu-modal {{modalName=='register'?'show':''}}">
+  <view class="cu-dialog">
+    <view class="cu-bar bg-white justify-end">
+      <view class="content">提示</view>
+      <view class="action" bindtap="hideModal">
+        <text class="cuIcon-close text-red"></text>
+      </view>
+    </view>
+    <view class="padding-xl">
+      {{modalContent}}
+    </view>
+    <view class="padding flex flex-direction">
+      <navigator url="" open-type='navigateBack'>
+        <button wx:if="{{showLogin}}" class="cu-btn bg-green lg">登录</button>
+      </navigator>
+    </view>
+  </view>
+</view>

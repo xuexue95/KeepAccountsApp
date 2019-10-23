@@ -1,0 +1,32 @@
+<!--pages/userInfo/userInfo.wxml-->
+<cu-custom bgColor="bg-green" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">个人资料</view>
+</cu-custom>
+
+
+<view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg radius">
+  <view class="cu-list menu  shadow-lg ">
+
+    <view class="cu-item arrow" bindtap="changeAvatar">
+      <view class="content">
+        <text class="">头像</text>
+      </view>
+      <view class="cu-avatar radius margin-tb xl" catchtap="ViewImage" data-url="{{user.avatar_url}}" style="background-image:url({{user.avatar_url}});"></view>
+    </view>
+    <view class="cu-item arrow" bindtap="changeNickname">
+      <view class="content">
+        <text>昵称</text>
+      </view>
+      <view class="text-lg text-gray">{{user.nickname}}</view>
+
+    </view>
+    <view class="cu-item arrow" bindtap="changeMobile">
+      <view class="content">
+        <text>手机号</text>
+      </view>
+      <view class="text-lg text-gray">{{user.mobile}}</view>
+
+    </view>
+  </view>
+</view>

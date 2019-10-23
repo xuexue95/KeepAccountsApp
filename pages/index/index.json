@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "footbar":"/components/footbar/footbar",
+    "detailPage": "/pages/detail/detail",
+    "chartPage": "/pages/chart/chart",
+    "minePage":"/pages/mine/mine",
+    "rankPage":"/pages/rank/rank"
+  }
+}

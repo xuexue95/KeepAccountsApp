@@ -1,0 +1,20 @@
+<!--pages/changeNickname/changeNickname.wxml-->
+<cu-custom bgColor="bg-green" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">设置名字</view>
+</cu-custom>
+
+<view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg radius">
+<view class="cu-form-group">
+  <input  value="{{nickname}}" maxlength="12" focus="true" bindinput="nameInput"></input>
+  <view class="padding-sm">
+  
+  <text class="cuIcon-roundclosefill text-xl text-gray" bindtap="clear"></text>
+  </view>
+</view>
+</view>
+
+
+<view class="padding-lr flex flex-direction">
+  <button class="cu-btn bg-green lg" bindtap="save">完成</button>
+</view>

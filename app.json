@@ -1,0 +1,37 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/accountBookSet/accountBookSet",
+    "pages/accountBookAdd/accountBookAdd",
+    "pages/report/report",
+    "pages/chart/chart",
+    "components/footbar/footbar",
+    "pages/detail/detail",
+    "pages/mine/mine",
+    "pages/rank/rank",
+    "pages/setCategory/setCategory",
+    "pages/register/register",
+    "pages/login/login",
+    "pages/addCategory/addCategory",
+    "pages/editAccount/editAccount",
+    "pages/feedback/feedback",
+    "pages/billDetail/billDetail",
+    "pages/userInfo/userInfo",
+    "pages/changeNickname/changeNickname",
+    "pages/changeMobile/changeMobile",
+    "pages/changeAvatar/changeAvatar",
+    "pages/changePwd/changePwd",
+    "pages/forgetPwd/forgetPwd"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#39b54a",
+    "navigationBarTitleText": "一起来记账",
+    "navigationBarTextStyle": "white",
+    "navigationStyle": "custom"
+  },
+  "usingComponents": {
+    "cu-custom": "components/cu-custom/cu-custom"
+  },
+  "sitemapLocation": "sitemap.json"
+}

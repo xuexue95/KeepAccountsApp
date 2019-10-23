@@ -1,0 +1,56 @@
+<!--index.wxml-->
+
+<!-- 明细 -->
+<detailPage wx:if="{{PageCur=='detail'}}" id="top" token="{{token}}" money="{{money}}" accountList="{{accountList}}" accountId="{{accountId}}" bind:myevent="onDetailEvent"></detailPage>
+
+<!-- 超表 -->
+<chartPage wx:if="{{PageCur=='chart'}}"></chartPage>
+
+<!-- 榜单 -->
+<rankPage wx:if="{{PageCur=='rank'}}"></rankPage>
+
+<!-- 我的 -->
+<minePage bind:myevent="onMineEvent" wx:if="{{PageCur=='mine'}}" token="{{token}}" userInfo="{{userInfo}}"></minePage>
+
+<!-- footbar -->
+<footbar bind:myevent="onMyEvent" id="foot" token="{{token}}"></footbar>
+
+
+
+
+<scroll-view scroll-y="true" style='height:{{scrollHeight}}px' wx:if="{{PageCur=='detail' && token}}">
+
+  <view class="cu-list menu-avatar"  wx:if="{{token && hasDeatil}}" >
+    <view class="cu-list menu card-menu margin-top shadow-lg radius" wx:for="{{RecordDetailList}}" wx:key bindtap="watchDetail" data-recordId="{{item.record_id}}">
+      <view class="cu-item">
+        <view class="cu-avatar cuIcon-goods lg margin-tb margin-right"></view>
+        <view class="content text-grey">{{item.date}}</view>
+
+        <view class=" padding-right {{item.type ==1?'text-green':'text-red'}}">{{item.type == 1?'':'-'}}
+          <text>{{item.money}}</text>
+        </view>
+
+      </view>
+    </view>
+  </view>
+
+  <view class="flex-direction margin-top-xl" wx:else>
+  <view class="margin-top text-center">
+    <text class=" text-gray">暂无数据,赶快记一笔吧!</text>
+  </view>
+</view>
+</scroll-view>
+
+
+
+
+
+<view class="flex-direction margin-top-xl"wx:if="{{PageCur=='detail' && !token}}">
+  <view class="margin-top text-center">
+    <text class=" text-gray">多款唯美皮肤主题,快快登录体验吧</text>
+  </view>
+
+  <view class="padding flex flex-direction">
+    <button class="cu-btn bg-green lg" bindtap="goLogin">登录账号,开始记账</button>
+  </view>
+</view>

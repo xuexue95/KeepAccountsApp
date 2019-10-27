@@ -7,7 +7,9 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    showCaptcha: false,
+    mobile: '',
+    password: ''
   },
 
   // 监听手机号输入
@@ -42,6 +44,7 @@ Page({
   getCaptcha() {
     var that = this
     var baseUrl = app.globalData.baseUrl
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/captcha',
       data: {},
@@ -49,6 +52,7 @@ Page({
         'content-type': 'application/x-www-form-urlencoded'
       },
       success(res) {
+        wx.hideLoading()
         that.setData({
           imgUrl: res.data.data.url,
           captcha_key: res.data.data.key
@@ -58,17 +62,15 @@ Page({
   },
 
   // 登录
-  login(e) {
-    var that = this
+  login() {
     var baseUrl = app.globalData.baseUrl
     var modalContent
-    var modalName = e.currentTarget.dataset.target
     var showLogin
     var mobile = this.data.mobile
     var password = this.data.password
     var captcha_key = this.data.captcha_key
     var captcha_code = this.data.captcha_code
-
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/user/token/mobile',
       method: 'post',
@@ -81,10 +83,14 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
-      success(res) {
+      success: (res) => {
+        wx.hideLoading()
+        console.log(res.data)
         if (res.data.status) {
           var token = res.data.data.token
-          console.log({'登录成功':  res.data.data})
+          console.log({
+            '登录成功': res.data.data
+          })
           wx.setStorageSync('token', token)
           app.getUserinfo(token)
           wx.showToast({
@@ -98,46 +104,54 @@ Page({
             }
           })
         } else {
-          modalContent = res.data.data
-          that.setData({
+          if (res.data.code == 'INVALID_CAPTCHA' && this.data.showCaptcha) {
+            wx.showModal({
+              title: '登录失败',
+              content: '验证码错误',
+              showCancel: false
+            })
+          } else if (res.data.code == 'INVALID_CAPTCHA') {
+            this.setData({
+              showCaptcha: true
+            })
+          } else {
+            wx.showModal({
+              title: '登录失败',
+              content: res.data.data,
+              showCancel: false
+            })
+          }
+          this.setData({
             captcha_code: '',
-            modalContent: modalContent,
+            password: ''
           })
-          that.showModal(modalName)
         }
       }
     })
   },
-  forget(){
+  
+  forget() {
+    this.setData({
+      mobile:'',
+      password:''
+    })
     wx.navigateTo({
       url: '/pages/forgetPwd/forgetPwd',
     })
   },
 
   register() {
+    this.setData({
+      mobile: '',
+      password: ''
+    })
     wx.navigateTo({
       url: '/pages/register/register',
     })
   },
 
-
-
-  // 模态框显示隐藏
-  showModal(modalName) {
-    this.setData({
-      modalName: modalName
-    })
-  },
-  hideModal(e) {
-    this.setData({
-      modalName: null
-    })
-  },
-
   goIndex() {
-    wx.navigateBack({
-
-    })
+    wx.navigateBack({})
   },
 
 
@@ -145,15 +159,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-
+    this.getCaptcha()
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function() {
-
-  },
 
   /**
    * 生命周期函数--监听页面显示
@@ -162,38 +170,4 @@ Page({
 
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
-  }
 })

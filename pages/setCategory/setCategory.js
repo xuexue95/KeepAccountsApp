@@ -14,6 +14,7 @@ Page({
   tabSelect(e) {
     this.setData({
       TabCur: e.currentTarget.dataset.id,
+      modalName:''
     })
   },
   addCategory(e) {
@@ -31,6 +32,7 @@ Page({
     var token = wx.getStorageSync('token')
     var url = baseUrl + `api/category/delete?id=${id}&token=${token}`
     console.log(url)
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
       method: 'POST',
@@ -39,6 +41,7 @@ Page({
         'content-type': 'application/x-www-form-urlencoded'
       },
       success:(res)=>{
+        wx.hideLoading()
         console.log(res.data)
         if(res.data.status){
           wx.showToast({
@@ -96,7 +99,7 @@ Page({
   },
   //  获取支出分类
   getExpenditureList(baseUrl, token) {
-    var that = this
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/category?token=' + token,
       method: 'post',
@@ -106,19 +109,20 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
-      success(res) {
+      success:(res)=> {
+        wx.hideLoading()
         app.globalData.expenditureList = res.data
-        that.setData({
+        this.setData({
           expenditureList: res.data.data
         })
-        console.log(that.data.expenditureList)
+        console.log(this.data.expenditureList)
       }
     })
   },
 
   // 获取收入分类
   getIncomeList(baseUrl, token) {
-    var that = this
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/category?token=' + token,
       method: 'post',
@@ -128,12 +132,13 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded' // 默认值
       },
-      success(res) {
+      success:(res)=> {
+        wx.hideLoading()
         app.globalData.incomeList = res.data
-        that.setData({
+        this.setData({
           incomeList: res.data.data
         })
-        console.log(that.data.incomeList)
+        console.log(this.data.incomeList)
       }
     })
   },

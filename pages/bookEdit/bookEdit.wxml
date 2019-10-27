@@ -1,0 +1,30 @@
+<!--pages/bookEdit/bookEdit.wxml-->
+<cu-custom bgColor="bg-green" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">修改账簿</view>
+</cu-custom>
+
+<view class="cu-list menu card-menu margin-top-xl  shadow-lg radius">
+  <view class="cu-form-group">
+    <view class="title">用户名称</view>
+    <input value="{{bookInfo.user_name}}" maxlength="10" class="text-right" disabled="true" bindinput="getUserName"></input>
+  </view>
+
+  <view class="cu-form-group">
+    <view class="title">创建时间</view>
+    <input value="{{bookInfo.created_at}}" class="text-right" disabled="true"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">账簿名称</view>
+    <input value="{{book_name}}"  class="text-right" disabled="true" bindinput="getUserName"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">账簿新名称</view>
+    <input placeholder="最多10个字符"  maxlength="10" class="text-right" bindinput="getName"></input>
+  </view>
+
+</view>
+
+<view class="padding flex flex-direction">
+  <button class="cu-btn bg-green lg" bindtap="editBook" data-target="{{bookInfo.id}}">提交</button>
+</view>

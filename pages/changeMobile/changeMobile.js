@@ -6,27 +6,22 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    showCaptcha: false,
   },
 
-  // 模态框显示隐藏
-  showModal(modalName) {
+
+  showCaptcha() {
     this.setData({
-      modalName: modalName
-    })
-  },
-  hideModal(e) {
-    this.setData({
-      modalName: null
+      showCaptcha: true
     })
   },
 
-  pwdInout(event){
+  pwdInout(event) {
     this.setData({
       password: event.detail.value
-    }) 
+    })
   },
-  phoneNumInput(event){
+  phoneNumInput(event) {
     this.setData({
       mobile: event.detail.value
     })
@@ -53,9 +48,8 @@ Page({
     var mobile = this.data.mobile
     var captcha_key = this.data.captcha_key
     var captcha_code = this.data.captcha_code
-    var modalContent
-    var modalName = e.currentTarget.dataset.target
     console.log(mobile, captcha_key, captcha_code)
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/sms/verify',
       method: "POST",
@@ -67,23 +61,36 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
-      success(res) {
+      success:(res)=> {
         console.log(res)
+        wx.hideLoading()
         if (res.data.status) {
-          modalContent = res.data.data
-          modalName = e.currentTarget.dataset.target
-        } else {
-          modalContent = res.data.data
-          that.setData({
-            verify: '',
-            captcha_code: ''
+          wx.showModal({
+            title: '短信验证码',
+            content: res.data.data,
+            showCancel: false
           })
-          that.getCaptcha()
+        } else {
+          if (res.data.code == "INVALID_CAPTCHA") {
+            wx.showModal({
+              title: '获取失败',
+              content: '图片验证码错误',
+              showCancel: false
+            })
+          } else {
+            wx.showModal({
+              title: '获取失败',
+              content: res.data.data,
+              showCancel: false
+            })
+          }
+          this.setData({
+            verify: '',
+            captcha_code: '',
+            mobile: ''
+          })
+          this.getCaptcha()
         }
-        that.setData({
-          modalContent: modalContent,
-        })
-        that.showModal(modalName)
       }
     })
   },
@@ -93,6 +100,7 @@ Page({
   getCaptcha() {
     var that = this
     var baseUrl = app.globalData.baseUrl
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/captcha',
       data: {},
@@ -100,38 +108,40 @@ Page({
         'content-type': 'application/json'
       },
       success(res) {
+        wx.hideLoading()
         console.log(res)
-        if(res.data.status){
+        if (res.data.status) {
           that.setData({
             imgUrl: res.data.data.url,
             captcha_key: res.data.data.key
           })
-        } else{
+        } else {
           wx.showModal({
             title: '错误',
             content: '图片验证码获取失败',
             showCancel: false
           })
         }
-        
       }
     })
   },
 
-  edit(){
+  edit() {
     var token = wx.getStorageSync('token')
-    var url = app.globalData.baseUrl +`api/user/mobile?token=${token}`
+    var url = app.globalData.baseUrl + `api/user/mobile?token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
-      data:{
-        password:this.data.password,
-        mobile:this.data.mobile,
-        verify:this.data.verify
+      data: {
+        password: this.data.password,
+        mobile: this.data.mobile,
+        verify: this.data.verify
       },
-      header:{
-        "content-type":"application/x-www-form-urlencoded"
+      header: {
+        "content-type": "application/x-www-form-urlencoded"
       },
-      success:(res)=>{
+      success: (res) => {
+        wx.hideLoading()
         console.log(res.data)
         if (res.data.status) {
           app.getUserinfo(token)
@@ -140,7 +150,7 @@ Page({
             icon: 'success',
             duration: 1500,
             complete: (res) => {
-              setTimeout(function () {
+              setTimeout(function() {
                 wx.navigateBack({})
               }, 1500)
             }
@@ -148,8 +158,8 @@ Page({
         } else {
           wx.showModal({
             title: '错误',
-            content: '修改失败',
-            showCancel:false
+            content: res.data.data,
+            showCancel: false
           })
         }
       }
@@ -159,56 +169,22 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-
+  onLoad: function(options) {
+    this.getCaptcha()
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
+  onReady: function() {
 
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
+  onShow: function() {
 
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  }
 })

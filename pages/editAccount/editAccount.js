@@ -52,7 +52,6 @@ Page({
 
 // 提交修改
   editAccount(e){
-    var that = this
     var name = this.data.name
     var remark = this.data.remark
     var type = String(Number(this.data.index) + 1)
@@ -62,7 +61,7 @@ Page({
     var sort = this.data.sort
     var url = baseUrl+`api/account/update?id=${id}&token=${token}`
     var content
-
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
       method:'post',
@@ -75,44 +74,40 @@ Page({
       header:{
         "content-type": "application/x-www-form-urlencoded"
       },
-      success(res){
+      success:(res)=>{
+        wx.hideLoading()
         console.log(res.data)
         if (res.data.status) {
           var addSuccess = true
           content = "修改成功"
-          that.showModal(e)
+          this.showModal(e)
         } else {
           content = res.data.data
         }
-        that.setData({
+        this.setData({
           content: content,
           addSuccess: addSuccess
         })
-        that.showModal(e)
+        this.showModal(e)
       }
     })
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad: function (options) {
-    var that = this
-    var id = options.id
-    var token = wx.getStorageSync('token')
+  // 获取账户详情
+  getAccountInfo(id,token){
     var baseUrl = app.globalData.baseUrl
-
-    // 根据 账户id获取账户详情
-    var url = baseUrl+`api/account/detail?id=${id}&token=${token}`
+    var url = baseUrl + `api/account/detail?id=${id}&token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
-      header:{
-        "content-type":"application/x-www-form-urlencoded"
+      header: {
+        "content-type": "application/x-www-form-urlencoded"
       },
-      success(res){
+      success:(res)=>{
+        wx.hideLoading()
         console.log(res.data)
-        if(res.data.status){
-          that.setData({
+        if (res.data.status) {
+          this.setData({
             index: String(Number(res.data.data.type) - 1),
             id: res.data.data.id,
             name: res.data.data.name,
@@ -128,9 +123,20 @@ Page({
             showCancel: false
           })
         }
-        
+
       }
     })
+  },
+
+  /**
+   * 生命周期函数--监听页面加载
+   */
+
+  onLoad: function (options) {
+    var id = options.id
+    var token = wx.getStorageSync('token')
+
+    this.getAccountInfo(id,token)
   },
 
   /**
@@ -146,38 +152,4 @@ Page({
   onShow: function () {
 
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  }
 })

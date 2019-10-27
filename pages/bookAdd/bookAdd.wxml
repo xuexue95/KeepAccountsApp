@@ -1,0 +1,16 @@
+<!--pages/bookAdd/bookAdd.wxml-->
+<cu-custom bgColor="bg-green" isBack="{{true}}">
+  <view slot="backText">返回</view>
+  <view slot="content">创建账簿</view>
+</cu-custom>
+
+<view class="cu-list menu card-menu margin-top-xl shadow-lg radius">
+  <view class="cu-form-group">
+    <input placeholder="账簿名称(最多10个字符)" maxlength="10"  bindinput="getName"></input>
+  </view>
+</view>
+
+
+<view class="padding flex flex-direction">
+  <button class="cu-btn bg-green lg" bindtap="bookAdd" >提交</button>
+</view>

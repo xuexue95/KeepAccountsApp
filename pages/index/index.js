@@ -12,7 +12,10 @@ Page({
     Custom: app.globalData.Custom,
     PageCur: 'detail',
     money: app.globalData.money,
-    hasDeatil: false
+    hasDeatil: false,
+    bookCount: null,
+    bookList: [],
+    bookId: wx.getStorageSync('bookId'),
   },
 
   onMyEvent: function(e) {
@@ -24,7 +27,8 @@ Page({
   },
 
   onDetailEvent: function() {
-
+    let book_id = wx.getStorageSync('bookId')
+    this.changeBook(book_id)
     this.onShow()
   },
   onMineEvent() {
@@ -37,73 +41,95 @@ Page({
     })
   },
 
-  // 获取账户列表
-  getAccountList(baseUrl, token) {
-
+  // 获取所有帐簿
+  getBook(baseUrl, token) {
+    let url = baseUrl + `api/book?token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
-      url: baseUrl + `api/account?token=${token}`,
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
+      url: url,
       success: (res) => {
+        wx.hideLoading()
         if (res.data.status) {
+          let bookList = res.data.data
+          let bookCount = bookList.length
           this.setData({
-            accountList: res.data.data
+            bookList: bookList,
+            bookCount: bookCount
           })
-          app.globalData.accountList = res.data.data
-          app.globalData.accountCount = res.data.data.length
+          app.globalData.bookList = bookList
+          app.globalData.bookCount = bookCount
           console.log({
-            '账本列表': res.data.data
+            '账簿列表': this.data.bookList
           })
+          let bookId = wx.getStorageSync('bookId')
+          if (bookList.length !== 0 && !bookId) {
+            var bookId = bookList[0].id
+            wx.setStorageSync('bookId', bookId)
 
-          if (res.data.data.length !== 0 && !app.globalData.accountId) {
-            var id = res.data.data[0].id
-            app.globalData.accountId = id
-            this.getMonthMoney(baseUrl, id, token)
-            this.getRecordDetail()
+            this.getRecordsList(baseUrl, token)
+
           } else {
-            var id = app.globalData.accountId
-            this.getMonthMoney(baseUrl, id, token)
-            this.getRecordDetail()
+
+            this.getRecordsList(baseUrl, token)
           }
-          console.log('当前账本id:' + app.globalData.accountId)
-          console.log(app.globalData.accountId)
-          this.setData({
-            accountId: app.globalData.accountId
-          })
-        } else {
-          wx.showModal({
-            title: '错误',
-            content: '收据请求失败',
-            showCancel: false
-          })
+          console.log('当前账簿id:' + wx.getStorageSync('bookId'))
         }
       }
     })
   },
 
-  // 帐户月金额变化汇总
-  getMonthMoney(baseUrl, id, token) {
-    var that = this
-    var url = baseUrl + `api/account/change?id=${id}&token=${token}`
-    var month = app.globalData.month
-    console.log('当前月份:' + month)
+  // 切换账簿
+  changeBook(book_id) {
+    var token = wx.getStorageSync('token')
+    var url = app.globalData.baseUrl + `api/book/set-default?token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
+    wx.request({
+      url: url,
+      method:'post',
+      data:{
+        book_id: book_id
+      },
+      header:{
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success:(res)=>{
+        wx.hideLoading()
+        wx.setStorageSync('bookId', book_id)
+        this.setData({
+          bookId:book_id
+        })
+      }
+    })
+  },
 
+  // 记帐明细列表(帐面)
+  getRecordsList(baseUrl, token) {
+    var url = baseUrl + `api/record/account?token=${token}`
+    var begin_date = app.globalData.month + '-1'
+    var end_date = app.globalData.month + '-31'
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
       method: 'post',
       data: {
-        month: month
+        begin_date: begin_date,
+        end_date: end_date
       },
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
-      success(res) {
+      success: (res) => {
+        wx.hideLoading()
+
         if (res.data.status) {
           console.log({
-            '账户月记录': res.data.data
+            '记账列表': res.data.data.list
           })
-          if (res.data.status) {
+          if (res.data.data.list.length !== 0) {
+            this.setData({
+              RecordsList: res.data.data.list,
+              hasDeatil: true
+            })
             var inMoney = String(parseInt(res.data.data.in).toFixed(2))
             var outMoney = String(parseInt(res.data.data.out).toFixed(2))
             var money = {
@@ -112,54 +138,24 @@ Page({
               inMoneyDecimal: inMoney.split('.')[1],
               outMoneyDecimal: outMoney.split('.')[1]
             }
-            that.setData({
+            this.setData({
               money: money
             })
             app.globalData.money = money
-          }
-          console.log('收入:' + inMoney + ' 支出:' + outMoney)
-        } else {
-          wx.showModal({
-            title: '错误',
-            content: '收据请求失败',
-            showCancel: false
-          })
-        }
-      }
-    })
-  },
-
-
-  // 账户记账记录
-  getRecordDetail() {
-    var token = wx.getStorageSync('token')
-    var begin_date = app.globalData.month + '-1'
-    var end_date = app.globalData.month + '-31'
-    var account_id = app.globalData.accountId
-    var url = app.globalData.baseUrl + `api/record/real?token=${token}`
-    wx.request({
-      url: url,
-      method: 'post',
-      data: {
-        begin_date: begin_date,
-        end_date: end_date,
-        account_id: account_id
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success: (res) => {
-        if(res.data.status){
-          console.log({
-            '记账列表': res.data.data.list
-          })
-          if (res.data.data.list.length !==0) {
-            this.setData({
-              RecordDetailList: res.data.data.list,
-              hasDeatil: true
-
-            })
+            console.log('收入:' + inMoney + ' 支出:' + outMoney)
           } else {
+            var money= {
+                inMoneyInteger: '0',
+                outMoneyInteger: '0',
+                inMoneyDecimal: '00',
+                outMoneyDecimal: '00'
+            }
+            this.setData({
+              money: money
+            })
+            app.globalData.money = money
+            console.log('收入:' + inMoney + ' 支出:' + outMoney)
+
             this.setData({
               hasDeatil: false
             })
@@ -167,11 +163,15 @@ Page({
         } else {
           wx.showModal({
             title: '错误',
-            content: '数据请求失败',
-            showCancel: false
+            content: '账户记账记录数据请求失败,请重新登录',
+            showCancel: false,
+            complete: () => {
+              wx.navigateTo({
+                url: '/pages/login/login',
+              })
+            }
           })
         }
-        
       }
     })
   },
@@ -199,7 +199,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function() {
-
   },
 
   /**
@@ -207,13 +206,8 @@ Page({
    */
   onShow: function() {
     this.setData({
-      RecordDetailList: '',
-      accountId: app.globalData.accountId
-    })
-    console.log(this.data.accountId)
-    this.setData({
       money: app.globalData.money,
-      userInfo: app.globalData.user
+      userInfo: app.globalData.user,
     })
 
     var token = wx.getStorageSync('token')
@@ -223,46 +217,11 @@ Page({
         token: token
       })
       let baseUrl = app.globalData.baseUrl
-      this.getAccountList(baseUrl, token)
+      this.getBook(baseUrl, token)
     } else {
       this.setData({
         token: ''
       })
     }
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
-  }
 })

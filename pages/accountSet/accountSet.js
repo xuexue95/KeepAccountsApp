@@ -1,4 +1,4 @@
-// pages/accountBookSet/accountBookSet.js
+// pages/accountSet/accountSet.js
 const app = getApp()
 
 Page({
@@ -8,7 +8,8 @@ Page({
    */
   data: {
     CustomBar: app.globalData.CustomBar,
-    accountList: '' //账户列表
+    // accountList: '' //账户列表,
+    bookList: []
   },
   // ListTouch触摸开始
   ListTouchStart(e) {
@@ -40,23 +41,51 @@ Page({
     })
   },
 
+  // 账户列表
+  getAccountList(baseUrl, token) {
+    var url = baseUrl + `api/account?token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
+    wx.request({
+      url: url,
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success: (res) => {
+        wx.hideLoading()
+        console.log(res.data)
+        if (res.data.status) {
+          this.setData({
+            accountList: res.data.data
+          })
+        } else {
+          this.setData({
+            accountList: []
+          })
+        }
+        console.log({
+          '账户列表': this.data.accountList
+        })
+      }
+    })
+  },
 
   // 删除账户
   delAccount(e) {
-
     var baseUrl = app.globalData.baseUrl
     var id = e.currentTarget.dataset.id
     var token = wx.getStorageSync('token')
     var url = baseUrl + `api/account/delete?id=${id}&token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
       header: {
         "content-type": "application/x-www-form-urlencoded"
       },
       success: (res) => {
+        wx.hideLoading()
         console.log(res.data)
         if (res.data.status) {
-          app.globalData.accountId =''
+          app.globalData.accountId = ''
           wx.showToast({
             title: '删除成功',
             icon: 'success',
@@ -69,8 +98,8 @@ Page({
           wx.showModal({
             title: '提示',
             content: '删除失败',
-            showCancel:false,
-            complete:(res) =>{
+            showCancel: false,
+            complete: (res) => {
               if (res.confirm) {
                 console.log('用户点击确定')
                 this.onShow()
@@ -90,39 +119,10 @@ Page({
     })
   },
 
-  // 账户列表
-  getAccountList(baseUrl, token) {
-    var url = baseUrl + `api/account?token=${token}`
-    wx.request({
-      url: url,
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success: (res) => {
-        console.log(res.data)
-        if (res.data.status) {
-          this.setData({
-            accountList: res.data.data
-          })
-          app.globalData.accountList = res.data.data
-        } else {
-          this.setData({
-            accountList: []
-          })
-          app.globalData.accountList = []
-        }
-        console.log({
-          '账户列表': app.globalData.accountList
-        })
-
-      }
-    })
-  },
-
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function(options) {
+  onLoad: function (options) {
     let scrollHeight = wx.getSystemInfoSync().windowHeight;
     this.setData({
       scrollHeight: scrollHeight - this.data.CustomBar - 65
@@ -132,49 +132,14 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function() {},
+  onReady: function () { },
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function() {
+  onShow: function () {
     var baseUrl = app.globalData.baseUrl
     let token = wx.getStorageSync('token')
     this.getAccountList(baseUrl, token)
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
-  }
 })

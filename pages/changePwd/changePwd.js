@@ -30,6 +30,7 @@ Page({
     var url = app.globalData.baseUrl + `api/user/password?token=${token}`
     if (this.data.password && this.data.new_password && this.data.password_again) {
       if (this.data.new_password == this.data.password_again) {
+        wx.showLoading({ title: '加载中', mask: true })
         wx.request({
           url: url,
           data: {
@@ -40,6 +41,7 @@ Page({
             "content-type": "application/x-www-form-urlencoded"
           },
           success: (res) => {
+            wx.hideLoading()
             console.log(res.data)
             if (res.data.status) {
               wx.showToast({
@@ -101,39 +103,4 @@ Page({
   onShow: function() {
 
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
-  }
 })

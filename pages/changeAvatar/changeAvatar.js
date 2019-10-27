@@ -13,7 +13,7 @@ Page({
   ChooseImage() {
     var that = this
     wx.chooseImage({
-      count: 4, //默认9
+      count: 1, //默认9
       sizeType: ['original', 'compressed'], //可以指定是原图还是压缩图，默认二者都有
       sourceType: ['album'], //从相册选择
       success: (res) => {
@@ -64,6 +64,7 @@ Page({
   UploadFile(imgurl) {
     var token = wx.getStorageSync('token')
     var url = app.globalData.baseUrl + 'api/upload/image?token=' + token
+    wx.showLoading({ title: '加载中', mask: true })
     wx.uploadFile({
       url: url,
       filePath: imgurl,
@@ -73,6 +74,7 @@ Page({
       },
       formData: null,
       success: (res) => {
+        wx.hideLoading()
         console.log(res)
         var fileKey = JSON.parse(res.data).data.file.fileKey
         console.log(fileKey)
@@ -86,6 +88,7 @@ Page({
   edit(){
     var token = wx.getStorageSync('token')
     var url = app.globalData.baseUrl +`api/user/profile/update?token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
       data:{
@@ -95,6 +98,7 @@ Page({
         'content-type': 'application/x-www-form-urlencoded'
       },
       success:(res)=>{
+        wx.hideLoading()
         console.log(res.data)
         if (res.data.status) {
           app.getUserinfo(token)
@@ -140,38 +144,4 @@ Page({
 
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  }
 })

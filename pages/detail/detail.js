@@ -12,21 +12,21 @@ Component({
 
   properties: {
     // 接受父组件的给的数据
-    accountList: {
+    bookList: {
       type: Object,
       value: ''
     },
-    token:{
-      type:String,
-      value:''
+    token: {
+      type: String,
+      value: ''
     },
-    money:{
-      type:Object,
-      value:''
+    money: {
+      type: Object,
+      value: ''
     },
-    accountId:{
-      type:Number,
-      value:''
+    bookId: {
+      type: Number,
+      value: ''
     }
 
   },
@@ -39,8 +39,6 @@ Component({
     CustomBar: app.globalData.CustomBar,
     Custom: app.globalData.Custom,
 
-
-   
   },
 
   /**
@@ -65,14 +63,14 @@ Component({
         year: year,
         month: month
       })
-      app.globalData.month = year+'-'+month
+      app.globalData.month = year + '-' + month
       console.log(app.globalData.month)
       this.triggerEvent('myevent')
     },
 
-    toAccBookSet() {
+    toBookSet() {
       wx.navigateTo({
-        url: '../accountBookSet/accountBookSet'
+        url: '../bookSet/bookSet'
       })
     },
     toSetCategory() {
@@ -81,7 +79,7 @@ Component({
         url: '/pages/setCategory/setCategory?TabCur=' + TabCur,
       })
     },
-    goLogin(){
+    goLogin() {
       wx.navigateTo({
         url: '/pages/login/login',
       })
@@ -94,8 +92,8 @@ Component({
       })
     },
 
-    chooseAccount(e){
-      app.globalData.accountId = e.currentTarget.dataset.id
+    chooseBook(e) {
+      wx.setStorageSync('bookId', e.currentTarget.dataset.id)
       this.setData({
         modalName: null
       })
@@ -108,7 +106,7 @@ Component({
   lifetimes: {
 
     //  节点树完成，可以用setData渲染节点，但无法操作节点
-    attached () {
+    attached() {
       this.getDate()
       let scrollHeight = wx.getSystemInfoSync().windowHeight;
       this.setData({

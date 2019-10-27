@@ -6,7 +6,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    index: '',
+    index: null,
     picker: ['现金', '银行', '支付平台', '其他'],
     name: '',
     balance: '',
@@ -17,6 +17,9 @@ Page({
     console.log(e);
     this.setData({
       index: e.detail.value
+    })
+    this.setData({
+      type: String(Number(this.data.index) + 1)
     })
   },
 
@@ -53,39 +56,49 @@ Page({
     var name = this.data.name
     var balance = this.data.balance
     var remark = this.data.remark
-    var type = String(Number(this.data.index) + 1)
+    var type = this.data.type
     var token = wx.getStorageSync('token')
     var url = baseUrl+`api/account/create?token=${token}`
     var content
-
-    wx.request({
-      url: url,
-      data: {
-        name: name,
-        type: type,
-        initial_balance: balance,
-        remark: remark,
-      },
-      method: 'POST',
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success:(res)=> {
-        console.log(res.data)
-        if (res.data.status) {
-          var addSuccess = true
-          content="添加成功"
-          app.globalData.accountId =''
-        }else{
-          content=res.data.data
+   
+    if(type){
+      wx.showLoading({ title: '加载中', mask: true })
+      wx.request({
+        url: url,
+        data: {
+          name: name,
+          type: type,
+          initial_balance: balance,
+          remark: remark,
+        },
+        method: 'POST',
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success: (res) => {
+          wx.hideLoading()
+          console.log(res.data)
+          if (res.data.status) {
+            var addSuccess = true
+            content = "添加成功"
+            app.globalData.accountId = ''
+          } else {
+            content = res.data.data
+          }
+          this.setData({
+            content: content,
+            addSuccess: addSuccess
+          })
+          this.showModal(e)
         }
-        this.setData({
-          content:content,
-          addSuccess:addSuccess
-        })
-        this.showModal(e)
-      }
-    })
+      })
+    } else {
+      wx.showModal({
+        title: '错误',
+        content: '请选择账户类型',
+        showCancel:false
+      })
+    }
   },
 
   /**
@@ -106,40 +119,7 @@ Page({
    */
   onShow: function() {
 
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
   }
+
+
 })

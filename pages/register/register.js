@@ -6,7 +6,20 @@ Page({
    * 页面的初始数据
    */
   data: {
+    mobile:'',
+    captcha_key: '',
+    captcha_code: '',
+    nickname:'',
+    password: '',
+    showCaptcha:false
+  },
 
+
+  showCaptcha(){
+    this.getCaptcha()
+    this.setData({
+      showCaptcha:true
+    })
   },
 
   // 监听昵称输入
@@ -48,6 +61,7 @@ Page({
   // 获取图片验证码
   getCaptcha() {
     var baseUrl = app.globalData.baseUrl
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl+'api/captcha',
       data: {},
@@ -55,6 +69,7 @@ Page({
         'content-type': 'application/json'
       },
       success:(res)=>{
+        wx.hideLoading()
         console.log(res)
         if(res.data.status){
           this.setData({
@@ -73,14 +88,13 @@ Page({
   },
 
   // 获取短信验证码
-  getVerify(e) {
+  getVerify() {
     var baseUrl = app.globalData.baseUrl
     var mobile = this.data.mobile
     var captcha_key = this.data.captcha_key
     var captcha_code = this.data.captcha_code
-    var modalContent
-    var modalName = e.currentTarget.dataset.target
     console.log(mobile, captcha_key, captcha_code)
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl+'api/sms/verify',
       method: "POST",
@@ -93,22 +107,35 @@ Page({
         'content-type': 'application/x-www-form-urlencoded'
       },
       success:(res)=>{
+        wx.hideLoading()
         console.log(res)
         if (res.data.status) {
-          modalContent = res.data.data
-          modalName = e.currentTarget.dataset.target
+          wx.showModal({
+            title: '短信验证码',
+            content: res.data.data,
+            showCancel:false
+          })
         } else {
-          modalContent = res.data.data
+          if (res.data.data == "INVALID_CAPTCHA"){
+            wx.showModal({
+              title: '获取失败',
+              content:'图片验证码错误',
+              showCancel: false
+            })
+          }else{
+            wx.showModal({
+              title: '获取失败',
+              content: res.data.data,
+              showCancel: false
+            })
+          }
           this.setData({
             verify: '',
-            captcha_code: ''
+            captcha_code: '',
+            mobile:''
           })
           this.getCaptcha()
         }
-        this.setData({
-          modalContent: modalContent,
-        })
-        this.showModal(modalName)
       }
     })
   },
@@ -124,7 +151,7 @@ Page({
     var verify = this.data.verify
     var password = this.data.password
     var nickname = this.data.nickname
-
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl+ 'api/user/register',
       method: 'post',
@@ -138,44 +165,43 @@ Page({
         'content-type': 'application/x-www-form-urlencoded'
       },
       success(res) {
+        wx.hideLoading()
         console.log(res)
         if (res.data.status) {
           showLogin = true
           modalContent = '注册成功'
+          wx.showToast({
+            title: '成功',
+            icon: 'success',
+            duration: 1000,
+            mask: true,
+            complete: function(res) {
+              wx.navigateBack({})
+            },
+          })
         } else {
-          modalContent = res.data.data
+          wx.showModal({
+            title: '注册失败',
+            content: res.data.data,
+            showCancel:false
+          })
           that.setData({
             verify: '',
-            captcha_code: ''
+            captcha_code: '',
+            password:'',
+            mobile:''
           })
           that.getCaptcha()
         }
-        that.setData({
-          modalContent: modalContent,
-          showLogin: showLogin
-        })
-        that.showModal(modalName)
       }
     })
   },
 
-  // 模态框显示隐藏
-  showModal(modalName) {
-    this.setData({
-      modalName: modalName
-    })
-  },
-  hideModal(e) {
-    this.setData({
-      modalName: null
-    })
-  },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-
   },
 
   /**
@@ -190,40 +216,6 @@ Page({
    */
   onShow: function() {
 
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
   }
+
 })

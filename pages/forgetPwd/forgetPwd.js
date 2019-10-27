@@ -6,7 +6,14 @@ Page({
    * 页面的初始数据
    */
   data: {
+    showCaptcha: false
+  },
 
+  showCaptcha() {
+    this.getCaptcha()
+    this.setData({
+      showCaptcha: true
+    })
   },
   // 监听手机号输入
   setPhoneNum(event) {
@@ -39,6 +46,7 @@ Page({
   // 获取图片验证码
   getCaptcha() {
     var baseUrl = app.globalData.baseUrl
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/captcha',
       data: {},
@@ -46,6 +54,7 @@ Page({
         'content-type': 'application/json'
       },
       success: (res) => {
+        wx.hideLoading()
         console.log(res)
         if (res.data.status) {
           this.setData({
@@ -72,6 +81,7 @@ Page({
     var modalContent
     var modalName = e.currentTarget.dataset.target
     console.log(mobile, captcha_key, captcha_code)
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/sms/verify',
       method: "POST",
@@ -84,28 +94,42 @@ Page({
         'content-type': 'application/x-www-form-urlencoded'
       },
       success: (res) => {
+        wx.hideLoading()
         console.log(res)
         if (res.data.status) {
-          modalContent = res.data.data
-          modalName = e.currentTarget.dataset.target
+          wx.showModal({
+            title: '短信验证码',
+            content: res.data.data,
+            showCancel: false
+          })
         } else {
-          modalContent = res.data.data
+          if (res.data.code == "INVALID_CAPTCHA") {
+            wx.showModal({
+              title: '获取失败',
+              content: '图片验证码错误',
+              showCancel: false
+            })
+          } else {
+            wx.showModal({
+              title: '获取失败',
+              content: res.data.data,
+              showCancel: false
+            })
+          }
           this.setData({
             verify: '',
-            captcha_code: ''
+            captcha_code: '',
+            password:''
           })
           this.getCaptcha()
         }
-        this.setData({
-          modalContent: modalContent,
-        })
-        this.showModal(modalName)
       }
     })
   },
 
   save() {
     var url = app.globalData.baseUrl + `api/user/token/sms`
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
       method: 'post',
@@ -118,6 +142,7 @@ Page({
         'content-type': 'application/x-www-form-urlencoded'
       },
       success: (res) => {
+        wx.hideLoading()
         console.log(res.data)
         if (res.data.status) {
           wx.showModal({
@@ -132,7 +157,8 @@ Page({
         } else {
           this.setData({
             verify: '',
-            captcha_code: ''
+            captcha_code: '',
+            password: ''
           })
           this.getCaptcha()
           wx.showModal({
@@ -146,30 +172,10 @@ Page({
   },
 
 
-  // 模态框显示隐藏
-  showModal(modalName) {
-    this.setData({
-      modalName: modalName
-    })
-  },
-  hideModal(e) {
-    this.setData({
-      modalName: null
-    })
-  },
-
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function() {
-
   },
 
   /**
@@ -178,39 +184,4 @@ Page({
   onShow: function() {
 
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
-  }
 })

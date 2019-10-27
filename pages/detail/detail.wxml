@@ -28,24 +28,24 @@
     <view class="cu-list menu text-left">
       <view class="cu-bar solid-bottom">
         <view class='action text-grey'>
-          <text class='cuIcon-titles text-orange'></text> 查看账户名明细
+          <text class='cuIcon-titles text-orange'></text> 查看账簿明细
         </view>
       </view>
     </view>
     <scroll-view scroll-y style="height:{{scrollHeight}}px;">
       <view class="cu-list menu text-left">
-        <view class="cu-item arrow" wx:for="{{accountList}}" wx:key bindtap="chooseAccount" data-id="{{accountList[index].id}}">
+        <view class="cu-item arrow" wx:for="{{bookList}}" wx:key bindtap="chooseBook" data-id="{{bookList[index].id}}">
           <view class="content">
-            <view class="{{accountList[index].id == accountId ?'text-green':''}}">
-              <text class='cuIcon-my text-green margin-right-sm'></text>{{accountList[index].name}}
+            <view class="{{bookList[index].id == bookId ?'text-green':''}}">
+              <text class='cuIcon-my text-green margin-right-sm'></text>{{bookList[index].name}}
             </view>
           </view>
         </view>
       </view>
     </scroll-view>
     <view class='padding-sm .foot margin-bottom'>
-      <button class="cu-btn block line-green " bindtap="toAccBookSet">
-        <text class='cuIcon-settings margin-lr-xs'></text>账户设置</button>
+      <button class="cu-btn block line-green " bindtap="toBookSet">
+        <text class='cuIcon-settings margin-lr-xs'></text>账簿设置</button>
     </view>
   </view>
 </view>

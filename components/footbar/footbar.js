@@ -32,10 +32,8 @@ Component({
       })
     },
     toReport() {
-      console.log(app.globalData.accountId)
-      var accountId = app.globalData.accountId
       wx.navigateTo({
-        url: '../report/report?accountId='+accountId
+        url: '../report/report'
       })
     },
     goLogin() {

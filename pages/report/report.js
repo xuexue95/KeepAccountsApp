@@ -9,12 +9,14 @@ Page({
     TabCur: 0,
     category: ['支出', '收入'],
     choose: -1,
-    date: '2018-12-25',
+    date: '',
+    index: null,
+    picker: [],
     imgList: [],
     fileKeys: [],
-    company_name:'',
-    remark:'',
-    category_id:''
+    company_name: '',
+    remark: '',
+    category_id: ''
   },
 
   getDate() {
@@ -31,7 +33,7 @@ Page({
       choose: -1,
     })
     console.log(this.data.choose)
-    
+
   },
 
   DateChange(e) {
@@ -60,7 +62,6 @@ Page({
         var imgurl = res.tempFilePaths[0]
         console.log(res.tempFilePaths[0])
         this.UploadFile(imgurl)
-
       }
     });
   },
@@ -96,6 +97,7 @@ Page({
   UploadFile(imgurl) {
     var token = wx.getStorageSync('token')
     var url = app.globalData.baseUrl + 'api/upload/image?token=' + token
+    wx.showLoading({ title: '加载中', mask: true })
     wx.uploadFile({
       url: url,
       filePath: imgurl,
@@ -105,15 +107,23 @@ Page({
       },
       formData: null,
       success: (res) => {
-        if(res.data.status){
-          var fileKey = JSON.parse(res.data).data.file.fileKey
+        wx.hideLoading()
+        var res = JSON.parse(res.data)
+        if (res.status) {
+          var fileKey = res.data.file.fileKey
           console.log(fileKey)
           this.data.fileKeys.push(fileKey)
         } else {
           wx.showModal({
             title: '错误',
             content: '图片上传失败',
-            showCancel: false
+            showCancel: false,
+            complete: () => {
+              this.data.imgList.splice(-1, 1);
+              this.setData({
+                imgList: this.data.imgList
+              })
+            }
           })
         }
       }
@@ -121,48 +131,58 @@ Page({
   },
 
   Bookkeeping() {
+
     var token = wx.getStorageSync('token')
     var url = app.globalData.baseUrl + 'api/record/create?token=' + token
-    console.log(Number(app.globalData.accountId), this.data.category_id)
-    console.log(this.data.date)
-    wx.request({
-      url: url,
-      data: {
-        total_money: this.data.total_money,
-        money : this.data.money,
-        account_id: Number(app.globalData.accountId),
-        category_id: Number(this.data.category_id),
-        date: this.data.date,
-        company_name: this.data.company_name,
-        remark: this.data.remark,
-        image_keys: this.data.fileKeys.join(',')
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success:(res)=>{
-        console.log(res.data)
-        if (res.data.status){
-          wx.showToast({
-            title: '成功',
-            icon: 'success',
-            duration: 1500,
-            complete:(res)=>{
-              setTimeout(function(){
-                wx.navigateBack({})
-              },1500)
-            }
-          })
-          
-
-        } else{
-          this.setData({
-            modalName2:'fail',
-            modalContent:res.data.data
-          })
+    if (this.data.index) {
+      var account_id = this.data.accountList[this.data.index].id
+      wx.showLoading({ title: '加载中', mask: true })
+      wx.request({
+        url: url,
+        data: {
+          total_money: this.data.total_money,
+          money: this.data.money,
+          account_id: account_id,
+          category_id: Number(this.data.category_id),
+          date: this.data.date,
+          company_name: this.data.company_name,
+          remark: this.data.remark,
+          image_keys: this.data.fileKeys.join(',')
+        },
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success: (res) => {
+          wx.hideLoading()
+          console.log(res.data)
+          if (res.data.status) {
+            wx.showToast({
+              title: '成功',
+              icon: 'success',
+              duration: 1500,
+              complete: (res) => {
+                setTimeout(function() {
+                  wx.navigateBack({})
+                }, 1500)
+              }
+            })
+          } else {
+            this.setData({
+              modalName2: 'fail',
+              modalContent: res.data.data
+            })
+          }
         }
-      }
-    })
+      })
+    } else {
+      wx.showModal({
+        title: '失败',
+        content: '请选择账户',
+        showCancel: false
+      })
+    }
+
+
   },
 
   // 模态框
@@ -174,11 +194,11 @@ Page({
   },
   hideModal(e) {
     console.log(e.currentTarget.dataset.modalname)
-    if (e.currentTarget.dataset.modalname=='bottomModal'){
+    if (e.currentTarget.dataset.modalname == 'bottomModal') {
       this.setData({
-      modalName: null,
-    })
-    } else{
+        modalName: null,
+      })
+    } else {
       this.setData({
         modalName2: null,
       })
@@ -192,13 +212,13 @@ Page({
     this.setData({
       choose: e.currentTarget.dataset.index,
       modalName: e.currentTarget.dataset.target,
-      category_id:e.currentTarget.dataset.categoryid
+      category_id: e.currentTarget.dataset.categoryid
     })
   },
 
   //  获取支出分类
   getExpenditureList(baseUrl, token) {
-    var that = this
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/category?token=' + token,
       method: 'post',
@@ -208,13 +228,14 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
-      success(res) {
-        if(res.data.status){
+      success:(res)=> {
+        wx.hideLoading()
+        if (res.data.status) {
           app.globalData.expenditureList = res.data
-          that.setData({
+          this.setData({
             expenditureList: res.data.data
           })
-          console.log(that.data.expenditureList)
+          console.log(this.data.expenditureList)
         } else {
           wx.showModal({
             title: '错误',
@@ -222,14 +243,14 @@ Page({
             showCancel: false
           })
         }
-        
+
       }
     })
   },
 
   // 获取收入分类
   getIncomeList(baseUrl, token) {
-    var that = this
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: baseUrl + 'api/category?token=' + token,
       method: 'post',
@@ -239,13 +260,14 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded' // 默认值
       },
-      success(res) {
-        if(res.data.status){
+      success:(res)=> {
+        wx.hideLoading()
+        if (res.data.status) {
           app.globalData.incomeList = res.data
-          that.setData({
+          this.setData({
             incomeList: res.data.data
           })
-          console.log(that.data.incomeList)
+          console.log(this.data.incomeList)
         } else {
           wx.showModal({
             title: '错误',
@@ -253,8 +275,51 @@ Page({
             showCancel: false
           })
         }
-        
+
       }
+    })
+  },
+
+  // 获取账户列表
+  getAccountList(baseUrl, token) {
+    wx.showLoading({ title: '加载中', mask: true })
+    wx.request({
+      url: baseUrl + `api/account?token=${token}`,
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success: (res) => {
+        wx.hideLoading()
+        if (res.data.status) {
+          let accountList = res.data.data
+          let picker = []
+          for (let i in accountList) {
+            picker.push(accountList[i].name)
+          }
+          this.setData({
+            picker: picker,
+            accountList: accountList
+          })
+        } else {
+          wx.showModal({
+            title: '错误',
+            content: '账户列表数据请求失败,请重新登录',
+            showCancel: false,
+            complete: () => {
+              wx.navigateTo({
+                url: '/pages/login/login',
+              })
+            }
+          })
+        }
+      }
+    })
+  },
+
+  accountChange(e) {
+    console.log(e);
+    this.setData({
+      index: e.detail.value
     })
   },
 
@@ -298,15 +363,9 @@ Page({
     var token = wx.getStorageSync('token')
     this.getExpenditureList(baseUrl, token)
     this.getIncomeList(baseUrl, token)
-
+    this.getAccountList(baseUrl, token)
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function() {
-
-  },
 
   /**
    * 生命周期函数--监听页面显示
@@ -315,38 +374,4 @@ Page({
 
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
-
-  }
 })

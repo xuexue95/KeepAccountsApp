@@ -16,9 +16,13 @@ Component({
       type: Object,
       value: ''
     },
-    token:{
-      type:String,
-      value:''
+    token: {
+      type: String,
+      value: ''
+    },
+    bookCount: {
+      type: Number,
+      value: ''
     }
   },
   /**
@@ -49,7 +53,7 @@ Component({
         url: '/pages/feedback/feedback',
       })
     },
-    changePwd(){
+    changePwd() {
       wx.navigateTo({
         url: '/pages/changePwd/changePwd',
       })
@@ -65,35 +69,65 @@ Component({
         url: '/pages/userInfo/userInfo',
       })
     },
+    accountSet() {
+      wx.navigateTo({
+        url: '/pages/accountSet/accountSet',
+      })
+    },
+
+    goBookSet() {
+      wx.navigateTo({
+        url: '/pages/bookSet/bookSet',
+      })
+    },
 
     logOut(e) {
       var token = wx.getStorageSync('token')
       var baseUrl = app.globalData.baseUrl
-      app.globalData.user = ''
-      wx.request({
-        url: baseUrl + 'api/user/logout?token=' + token,
-        success: (res) => {
-          console.log(res.data)
-          if(res.data.status){
-            var name = e.currentTarget.dataset.target
-            this.showModal(name)
+      if (token) {
+        app.globalData.user = ''
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        wx.request({
+          url: baseUrl + 'api/user/logout?token=' + token,
+          success: (res) => {
+            wx.hideLoading()
+            console.log(res.data)
+            if (res.data.status) {
 
-            wx.removeStorageSync("token")
+              wx.removeStorageSync("token")
+              wx.removeStorageSync('bookId')
+              app.globalData.money = {
+                inMoneyInteger: '0',
+                outMoneyInteger: '0',
+                inMoneyDecimal: '00',
+                outMoneyDecimal: '00'
+              }
+              this.setData({
+                userInfo: '',
+                isLogin: false,
+                token: '',
+                bookCount: 0
+              })
 
-            app.globalData.money = {
-              inMoneyInteger: '0',
-              outMoneyInteger: '0',
-              inMoneyDecimal: '00',
-              outMoneyDecimal: '00'
+              wx.showToast({
+                title: '退出成功',
+                icon: 'success',
+                duration: 1000
+              })
             }
-            this.setData({
-              userInfo: '',
-              isLogin: false,
-              token: '',
-            })
           }
-        }
-      })
+        })
+      } else {
+        wx.showModal({
+          title: '未登录',
+          content: '请先登录后再试',
+          showCancel:false
+        })
+      }
+
     }
   },
 
@@ -103,9 +137,7 @@ Component({
 
     //  节点树完成，可以用setData渲染节点，但无法操作节点
     attached() {
-      this.setData({
-        accountCount: app.globalData.accountCount,
-      })
+
     },
   }
 })

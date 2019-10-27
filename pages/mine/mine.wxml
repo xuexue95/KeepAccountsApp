@@ -3,7 +3,7 @@
   <view class="UCenter-bg" style="border:none">
     <image src="{{userInfo.avatar_url}}" class="png" mode="aspectFill" style="border-radius:50%;" wx:if="{{token}}"></image>
 
-    <view class="text-lg" bindtap="login" wx:if='{{!token}}'>请登录
+    <view class="text-lg" bindtap="login" wx:if='{{!token}}' >请登录
     </view>
     <view class="text-lg margin-top" wx:else>{{userInfo.nickname}}
     </view>
@@ -16,8 +16,8 @@
       <view class="margin-top-sm">
         <text class=""></text> 已邀请</view>
     </view>
-    <view class="flex flex-sub flex-direction solid-right">
-      <view class="text-xxl text-blue">{{accountCount?accountCount:0}}</view>
+    <view class="flex flex-sub flex-direction solid-right" bindtap="goBookSet">
+      <view class="text-xxl text-blue">{{bookCount?bookCount:0}}</view>
       <view class="margin-top-sm">
         <text class=""></text> 总账本</view>
     </view>
@@ -34,6 +34,12 @@
       <button class="cu-btn content" >
         <text class="cuIcon-comment text-cyan"></text>
         <text class="text-grey">个人信息</text>
+      </button>
+    </view>
+    <view class="cu-item arrow" bindtap="{{token?'accountSet':'login'}}">
+      <button class="cu-btn content" >
+        <text class="cuIcon-comment text-cyan"></text>
+        <text class="text-grey">账户设置</text>
       </button>
     </view>
     <view class="cu-item arrow" bindtap="{{token?'changePwd':'login'}}">
@@ -60,18 +66,3 @@
 
   <view class="cu-tabbar-height"></view>
 </scroll-view>
-
-<!-- 退出登录模态框 -->
-<view class="cu-modal {{modalName=='logOut'?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">提示</view>
-      <view class="action" bindtap="hideModal">
-        <text class="cuIcon-close text-red"></text>
-      </view>
-    </view>
-    <view class="padding-xl">
-      退出成功
-    </view>
-  </view>
-</view>

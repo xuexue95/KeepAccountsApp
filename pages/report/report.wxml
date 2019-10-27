@@ -31,8 +31,6 @@
   </view>
 </block>
 
-
-
 <view class="cu-modal bottom-modal {{modalName=='bottomModal'?'show':''}}">
 
   <view class="cu-dialog">
@@ -42,8 +40,8 @@
     </view>
 
 
-    <view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg radius">
-      <view class="padding-bottom-xl text-right">
+    <view class="cu-list menu card-menu margin-top shadow-lg radius">
+      <view class=" text-right">
 
         <view class="cu-form-group">
           <view class="title">记帐金额</view>
@@ -53,6 +51,15 @@
         <view class="cu-form-group">
           <view class="title">实付金额</view>
           <input placeholder="0.00" bindinput="setMoney"></input>
+        </view>
+
+        <view class="cu-form-group">
+          <view class="title">账户选择</view>
+          <picker range="{{picker}}"  value="{{index}}" bindchange="accountChange">
+            <view class="picker">
+              <view>{{index?picker[index]:'请选择'}}</view>
+            </view>
+          </picker>
         </view>
 
         <view class="cu-form-group">
@@ -66,12 +73,12 @@
 
         <view class="cu-form-group">
           <view class="title">交易对象</view>
-          <input placeholder="允许为空" bindinput="setCompany_name"></input>
+          <input placeholder="" bindinput="setCompany_name"></input>
         </view>
 
         <view class="cu-form-group">
           <view class="title">备注</view>
-          <textarea class="text-right " bindinput="setRemark" placeholder="允许为空"></textarea>
+          <textarea class="text-right " bindinput="setRemark" placeholder=""></textarea>
         </view>
 
         <view class="cu-bar bg-white margin-top">

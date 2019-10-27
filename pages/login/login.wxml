@@ -9,39 +9,21 @@
 
 <view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg radius">
   <view class="cu-form-group">
-    <view class="title">手机号</view>
-    <input placeholder="请输入手机号" bindinput='setPhoneNum'></input>
+    <input placeholder="手机号码" type="number"  value="{{mobile}}" bindinput='setPhoneNum'></input>
   </view>
   <view class="cu-form-group">
-    <view class="title">密码</view>
-    <input placeholder="请输入密码" password="true" bindinput="setPwd"></input>
+    <input placeholder="密码" value="{{password}}" password="true" bindinput="setPwd"></input>
   </view>
-  <!-- <view class="cu-form-group" style="height:55px">
-    <view class="title">图片验证码</view>
-    <input placeholder="获取验证码" value="{{captcha_code}}" bindinput='setCaptcha'></input>
+  <view class="cu-form-group" style="height:55px" wx:if="{{showCaptcha}}">
+    <input placeholder="图片验证码" type="number" value="{{captcha_code}}" bindinput='setCaptcha'></input>
     <image src="{{imgUrl}}" mode="aspectFit" style="width:20%;" bindtap="getCaptcha"></image>
-    <button class="cu-btn bg-green shadow" bindtap="getCaptcha">显示</button>
-  </view> -->
+  </view>
 
 </view>
 <view class="flex flex-direction margin-lr">
-  <button class="cu-btn bg-green lg" bindtap="login" data-target="login">登录</button>
-<button class="cu-btn margin-top" bindtap="forget">忘记密码</button>
-  <button class="cu-btn" bindtap="register">注册</button>
+  <button class="cu-btn bg-green lg" bindtap="login">登录</button>
 </view>
-
-<!-- 登录模态框 -->
-<view class="cu-modal {{modalName=='login'?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">登录失败</view>
-
-      <view class="action" bindtap="hideModal" >
-        <text class="cuIcon-close text-red"></text>
-      </view>
-    </view>
-    <view class="padding-xl">
-      {{modalContent}}
-    </view>
-  </view>
+<view class="flex justify-between">
+  <button class="cu-btn margin text-blue" bindtap="forget">忘记密码</button>
+  <button class="cu-btn margin text-blue" bindtap="register">注册</button>
 </view>

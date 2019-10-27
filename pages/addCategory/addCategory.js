@@ -17,12 +17,12 @@ Page({
 
   // 添加类别
   add() {
-    var that = this
     var baseUrl = app.globalData.baseUrl
     var token = wx.getStorageSync('token')
     var type = this.data.type
     var name = this.data.name
     if (name) {
+      wx.showLoading({ title: '加载中', mask: true })
       wx.request({
         url: baseUrl + 'api/category/create?token=' + token,
         method: 'post',
@@ -35,9 +35,19 @@ Page({
         header: {
           'content-type': 'application/x-www-form-urlencoded'
         },
-        success(res) {
-          console.log(that.data.TabCur)
-          wx.navigateBack()
+        success:(res)=> {
+          wx.hideLoading()
+          console.log(this.data.TabCur)
+          wx.showToast({
+            title: '添加成功',
+            icon: 'success',
+            duration: 1000,
+            complete:()=>{
+              setTimeout(function(){
+                wx.navigateBack()
+              }, 1000)
+            }
+          })
         }
       })
     } else {
@@ -73,41 +83,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
 
   }
 })

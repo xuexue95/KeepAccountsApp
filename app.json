@@ -1,7 +1,7 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/accountBookSet/accountBookSet",
+    "pages/bookSet/bookSet",
     "pages/accountBookAdd/accountBookAdd",
     "pages/report/report",
     "pages/chart/chart",
@@ -21,7 +21,10 @@
     "pages/changeMobile/changeMobile",
     "pages/changeAvatar/changeAvatar",
     "pages/changePwd/changePwd",
-    "pages/forgetPwd/forgetPwd"
+    "pages/forgetPwd/forgetPwd",
+    "pages/bookEdit/bookEdit",
+    "pages/bookAdd/bookAdd",
+    "pages/accountSet/accountSet"
   ],
   "window": {
     "backgroundTextStyle": "light",

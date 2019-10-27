@@ -8,17 +8,14 @@
 <view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg radius">
 
   <view class="cu-form-group">
-    <view class="title">原密码</view>
-    <input placeholder="请输入当前密码" password="true" bindinput="pwdInout"></input>
+    <input placeholder="请输入原密码" password="true" bindinput="pwdInout"></input>
   </view>
 
   <view class="cu-form-group">
-    <view class="title">新密码</view>
     <input placeholder="请输入新密码" password="true" bindinput='NewPwdInout'></input>
   </view>
   <view class="cu-form-group">
-    <view class="title">新密码</view>
-    <input placeholder="确认密码" password="true" bindinput='PwdAgainInout'></input>
+    <input placeholder="确认新密码" password="true" bindinput='PwdAgainInout'></input>
   </view>
 
 </view>

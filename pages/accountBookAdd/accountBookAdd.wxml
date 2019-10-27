@@ -4,7 +4,7 @@
   <view slot="content">添加账户</view>
 </cu-custom>
 
-<view class="cu-list menu card-menu margin-top-xl margin-bottom-xl shadow-lg radius">
+<view class="cu-list menu card-menu margin-top-xl shadow-lg radius">
   <view class="cu-form-group">
     <view class="title">名称</view>
     <input placeholder="最多10个字符" maxlength="10" class="text-right" bindinput="getName"></input>

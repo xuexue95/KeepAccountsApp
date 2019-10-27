@@ -8,7 +8,9 @@ Page({
   data: {
     Cur: false,
     imgList: [],
-    fileKeys: []
+    fileKeys: [],
+    picker: [],
+    index: null,
   },
 
   changeCur() {
@@ -53,12 +55,15 @@ Page({
   getBillDetail(token, id) {
 
     var url = app.globalData.baseUrl + `api/record/detail?id=${id}&token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
     wx.request({
       url: url,
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
       success: (res) => {
+        wx.hideLoading()
+
         console.log({
           '记录详情': res.data.data
         })
@@ -84,10 +89,11 @@ Page({
       }
     })
   },
+
   ViewImage(e) {
     wx.previewImage({
       urls: this.data.imgList,
-      current: e.currentTarget.dataset.url
+      current: e.currentTarget.dataset.url,
     });
     console.log(e.currentTarget.dataset.url)
   },
@@ -132,6 +138,8 @@ Page({
   UploadFile(imgurl) {
     var token = wx.getStorageSync('token')
     var url = app.globalData.baseUrl + 'api/upload/image?token=' + token
+    wx.showLoading({ title: '加载中', mask: true })
+
     wx.uploadFile({
       url: url,
       filePath: imgurl,
@@ -141,6 +149,8 @@ Page({
       },
       formData: null,
       success: (res) => {
+        wx.hideLoading()
+
         var fileKey = JSON.parse(res.data).data.file.fileKey
         console.log(fileKey)
         this.data.fileKeys.push(fileKey)
@@ -157,6 +167,8 @@ Page({
     var url2 = app.globalData.baseUrl + `api/record/item/update?itemId=${itemId}&token=${token}`
     console.log(itemId)
     if (this.data.total_money) {
+      wx.showLoading({ title: '加载中', mask: true })
+
       wx.request({
         url: url1,
         method: "post",
@@ -169,19 +181,26 @@ Page({
           'content-type': 'application/x-www-form-urlencoded'
         },
         success: (res) => {
+          wx.hideLoading()
+
           console.log(res.data)
           if (res.data.status) {
+            wx.showLoading({ title: '加载中', mask: true })
+
             wx.request({
               url: url2,
               method: 'post',
               data: {
+                account_id:this.data.accountList[this.data.index].id,
                 date: this.data.date,
                 image_keys: this.data.fileKeys
               },
               header: {
                 'content-type': 'application/x-www-form-urlencoded'
               },
-              success: (res) => {
+              complete: (res) => {
+                wx.hideLoading()
+
                 console.log(res.data)
                 if (res.data.status) {
                   wx.showToast({
@@ -223,12 +242,16 @@ Page({
     var token = wx.getStorageSync('token')
     var id = this.data.id
     var url = app.globalData.baseUrl + `api/record/delete?id=${id}&token=${token}`
+    wx.showLoading({ title: '加载中', mask: true })
+
     wx.request({
       url: url,
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
       success:(res)=>{
+        wx.hideLoading()
+
         console.log(res.data)
         if(res.data.status){
           wx.showToast({
@@ -251,6 +274,54 @@ Page({
     })
   },
 
+
+  // 获取账户列表
+  getAccountList(token) {
+    wx.showLoading({ title: '加载中', mask: true })
+
+    wx.request({
+      url: app.globalData.baseUrl + `api/account?token=${token}`,
+      header: {
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      success: (res) => {
+        wx.hideLoading()
+
+        if (res.data.status) {
+          let accountList = res.data.data
+
+          console.log(accountList)
+          let picker = []
+          for (let i in accountList) {
+            picker.push(accountList[i].name)
+          }
+          this.setData({
+            picker: picker,
+            accountList: accountList
+          })
+        } else {
+          wx.showModal({
+            title: '错误',
+            content: '账户列表数据请求失败,请重新登录',
+            showCancel: false,
+            complete: () => {
+              wx.navigateTo({
+                url: '/pages/login/login',
+              })
+            }
+          })
+        }
+      }
+    })
+  },
+
+  accountChange(e) {
+    console.log(e);
+    this.setData({
+      index: e.detail.value
+    })
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -261,6 +332,7 @@ Page({
     })
     var token = wx.getStorageSync('token')
     this.getBillDetail(token, id)
+    this.getAccountList(token)
     this.setData({
       username: app.globalData.user.nickname
     })

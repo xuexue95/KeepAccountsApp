@@ -1,5 +1,5 @@
 /**app.wxss**/
-
+/* 小程序公共样式 */
 @import "colorui/main.wxss";
 @import "colorui/icon.wxss";
 

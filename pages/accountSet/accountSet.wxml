@@ -1,4 +1,4 @@
-<!--pages/accountBookSet/accountBookSet.wxml-->
+<!--pages/accountSet/accountSet.wxml-->
 <cu-custom bgColor="bg-green" isBack="{{true}}">
   <view slot="backText">返回</view>
   <view slot="content">账户设置</view>
@@ -9,7 +9,6 @@
   <view class="cu-bar text-sm">
     <view class='action text-grey' style='line-height:1;'>
       <text class='cuIcon-titles text-green'></text>
-      <text class='text-sm'>首页默认加载排序第一的账户明细</text>
       <text class="text-sm text-green">（ 滑动进行编辑 ）</text>
     </view>
   </view>
@@ -27,15 +26,12 @@
 </view>
   </scroll-view>
 
-
 <view class='foot'>
   <view class='padding-xs .foot margin-bottom flex'>
-    <view class='flex-sub text-center margin-lr-xs'>
-      <!-- <navigator url="../accountBookSet/accountBookSet" open-type="redirect" > -->
+    <!-- <view class='flex-sub text-center margin-lr-xs'>
       <button class="cu-btn block line-grey" bindtap="">
         <text class='cuIcon-post margin-lr-xs'></text>保存排序</button>
-      <!-- </navigator> -->
-    </view>
+    </view> -->
 
     <view class='flex-sub  text-center margin-lr-xs'>
       <navigator url="/pages/accountBookAdd/accountBookAdd" open-type="navigate">

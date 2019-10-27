@@ -19,7 +19,11 @@
   </view>
   <view class="cu-form-group margin-top">
     <view class="title">金额</view>
-    <input class="text-right" disabled="true" placeholder="{{total_money}}"></input>
+    <input class="text-right" disabled="true" type="digit" placeholder="{{total_money}}"></input>
+  </view>
+  <view class="cu-form-group">
+    <view class="title">账户</view>
+    <input class="text-right" disabled="true" placeholder="{{detail.items[0].account_name}}"></input>
   </view>
   <view class="cu-form-group">
     <view class="title">交易对象</view>
@@ -35,20 +39,20 @@
   </view>
 
   <view class="cu-bar bg-white margin-top">
-		<view class="action">
-			图片
-		</view>
-		<view class="action">
-			{{imgList.length}}/4
-		</view>
-	</view>
-	<view class="cu-form-group">
-		<view class="grid col-4 grid-square flex-sub">
-			<view class="bg-img" wx:for="{{imgList}}" wx:key="{{index}}" bindtap="ViewImage" data-url="{{item}}">
-				<image src='{{item}}' mode='aspectFill'></image>
-			</view>
-		</view>
-	</view>
+    <view class="action">
+      图片
+    </view>
+    <view class="action">
+      {{imgList.length}}/4
+    </view>
+  </view>
+  <view class="cu-form-group">
+    <view class="grid col-4 grid-square flex-sub">
+      <view class="bg-img" wx:for="{{imgList}}" wx:key="{{index}}" bindtap="ViewImage" data-url="{{item}}">
+        <image src='{{item}}' mode='aspectFill'></image>
+      </view>
+    </view>
+  </view>
 </view>
 
 
@@ -67,15 +71,23 @@
   </view>
   <view class="cu-form-group margin-top">
     <view class="title">金额</view>
-    <input class="text-right"  value="{{total_money}}" bindinput="moneyInput"></input>
+    <input class="text-right" value="{{total_money}}" bindinput="moneyInput"></input>
   </view>
-   <view class="cu-form-group">
+  <view class="cu-form-group">
+    <view class="title">账户选择</view>
+    <picker range="{{picker}}" value="{{index}}" bindchange="accountChange">
+      <view class="picker">
+        <view>{{index?picker[index]:detail.items[0].account_name}}</view>
+      </view>
+    </picker>
+  </view>
+  <view class="cu-form-group">
     <view class="title">交易对象</view>
     <input class="text-right" value="{{company_name}}" bindinput="companyInput"></input>
   </view>
   <view class="cu-form-group">
     <view class="title">备注</view>
-    <input class="text-right"  value="{{remark}}" bindinput="remarkInput"></input>
+    <input class="text-right" value="{{remark}}" bindinput="remarkInput"></input>
   </view>
   <view class="cu-form-group">
     <view class="title">日期</view>
@@ -83,26 +95,26 @@
   </view>
 
   <view class="cu-bar bg-white margin-top">
-		<view class="action">
-			添加图片
-		</view>
-		<view class="action">
-			{{imgList.length}}/4
-		</view>
-	</view>
-	<view class="cu-form-group">
-		<view class="grid col-4 grid-square flex-sub">
-			<view class="bg-img" wx:for="{{imgList}}" wx:key="{{index}}" bindtap="ViewImage" data-url="{{item}}">
-				<image src='{{item}}' mode='aspectFill'></image>
-				<view class="cu-tag bg-red" catchtap="DelImg" data-index="{{index}}">
-					<text class="cuIcon-close"></text>
-				</view>
-			</view>
-			<view class="solids" bindtap="ChooseImage" wx:if="{{imgList.length<4}}">
-				<text class="cuIcon-cameraadd"></text>
-			</view>
-		</view>
-	</view>
+    <view class="action">
+      添加图片
+    </view>
+    <view class="action">
+      {{imgList.length}}/4
+    </view>
+  </view>
+  <view class="cu-form-group">
+    <view class="grid col-4 grid-square flex-sub">
+      <view class="bg-img" wx:for="{{imgList}}" wx:key="{{index}}" bindtap="ViewImage" data-url="{{item}}">
+        <image src='{{item}}' mode='aspectFill'></image>
+        <view class="cu-tag bg-red" catchtap="DelImg" data-index="{{index}}">
+          <text class="cuIcon-close"></text>
+        </view>
+      </view>
+      <view class="solids" bindtap="ChooseImage" wx:if="{{imgList.length<4}}">
+        <text class="cuIcon-cameraadd"></text>
+      </view>
+    </view>
+  </view>
 </view>
 
 

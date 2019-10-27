@@ -5,27 +5,27 @@
 </cu-custom>
 
 <scroll-view class='' scroll-y style="height:{{scrollHeight}}px;">
-<view class="cu-list menu text-left">
-  <view class="cu-bar text-sm">
-    <view class='action text-grey' style='line-height:1;'>
-      <text class='cuIcon-titles text-green'></text>
-      <text class='text-sm'>首页默认加载排序第一的账簿</text>
-      <text class="text-sm text-green">（ 滑动进行编辑 ）</text>
+  <view class="cu-list menu text-left">
+    <view class="cu-bar text-sm">
+      <view class='action text-grey' style='line-height:1;'>
+        <text class='cuIcon-titles text-green'></text>
+        <text class='text-sm'>首页默认加载排序第一的账簿</text>
+        <text class="text-sm text-green">（ 滑动进行编辑 ）</text>
+      </view>
+    </view>
+
+    <view class="cu-item  arrow {{modalName=='move-box-'+ index?'move-cur':''}}" wx:for="{{bookList}}" wx:key bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd" data-target="move-box-{{index}}">
+
+      <view class="content">
+        <text class='cuIcon-my text-green margin-right-sm'></text>{{bookList[index].name}}
+      </view>
+      <view class="move">
+        <view class="bg-grey" bindtap="editBook" data-id="{{bookList[index].id}}">修改</view>
+        <view class="bg-red" bindtap="delBook" data-id="{{bookList[index].id}}">删除</view>
+      </view>
     </view>
   </view>
-
-  <view class="cu-item  arrow {{modalName=='move-box-'+ index?'move-cur':''}}" wx:for="{{bookList}}" wx:key bindtouchstart="ListTouchStart" bindtouchmove="ListTouchMove" bindtouchend="ListTouchEnd" data-target="move-box-{{index}}">
-
-    <view class="content">
-      <text class='cuIcon-my text-green margin-right-sm'></text>{{bookList[index].name}}
-    </view>
-    <view class="move">
-      <view class="bg-grey" bindtap="editBook" data-id="{{bookList[index].id}}">修改</view>
-      <view class="bg-red" bindtap="delBook" data-id="{{bookList[index].id}}">删除</view>
-    </view>
-  </view>
-</view>
-  </scroll-view>
+</scroll-view>
 
 
 <view class='foot'>
@@ -36,10 +36,8 @@
     </view> -->
 
     <view class='flex-sub  text-center margin-lr-xs'>
-      <navigator url="/pages/bookAdd/bookAdd" open-type="navigate">
-        <button class="cu-btn  block line-green " bindtap="">
-          <text class='cuIcon-add margin-lr-xs'></text>添加账簿</button>
-      </navigator>
+      <button class="cu-btn  block line-green " bindtap="addBook">
+        <text class='cuIcon-add margin-lr-xs'></text>添加账簿</button>
     </view>
   </view>
 </view>

@@ -119,10 +119,10 @@ Page({
   },
   DelImg(e) {
     wx.showModal({
-      title: '召唤师',
-      content: '确定要删除这段回忆吗？',
-      cancelText: '再看看',
-      confirmText: '再见',
+      title: '提示',
+      content: '确定要删除吗？',
+      cancelText: '取消',
+      confirmText: '确认',
       success: res => {
         if (res.confirm) {
           this.data.imgList.splice(e.currentTarget.dataset.index, 1);
@@ -186,12 +186,17 @@ Page({
           console.log(res.data)
           if (res.data.status) {
             wx.showLoading({ title: '加载中', mask: true })
-
+            console.log(this.data.accountList,this.data.index)
+            if(this.data.index){
+              var account_id = this.data.accountList[this.data.index].id
+            } else {
+              var account_id = this.data.account_id
+            }
             wx.request({
               url: url2,
               method: 'post',
               data: {
-                account_id:this.data.accountList[this.data.index].id,
+                account_id: account_id,
                 date: this.data.date,
                 image_keys: this.data.fileKeys
               },

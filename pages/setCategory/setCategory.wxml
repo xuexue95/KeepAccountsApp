@@ -41,17 +41,14 @@
 
 <!-- 底部按钮 -->
 <view class='padding-xs myfoot margin-bottom flex'>
-  <view class='flex-sub text-center margin-lr-xs'>
-    <!-- <navigator url="../accountBookSet/accountBookSet" open-type="redirect" > -->
+  <!-- <view class='flex-sub text-center margin-lr-xs'>
+
     <button class="cu-btn block line-grey" bindtap="">
       <text class='cuIcon-post margin-lr-xs'></text>保存排序</button>
-    <!-- </navigator> -->
-  </view>
+  </view> -->
 
   <view class='flex-sub  text-center margin-lr-xs'>
-    <!-- <navigator url="/pages/addCategory/addCategory" open-type="navigate"> -->
     <button class="cu-btn  block line-green" bindtap="addCategory" data-classname="{{TabCur}}">
       <text class='cuIcon-add margin-lr-xs'></text>添加类别</button>
-    <!-- </navigator> -->
   </view>
 </view>

@@ -117,6 +117,14 @@ Page({
       url: `/pages/bookEdit/bookEdit?id=${id}`,
     })
   },
+  addBook(){
+    this.setData({
+      modalName:''
+    })
+    wx.navigateTo({
+      url: '/pages/bookAdd/bookAdd',
+    })
+  },
 
 
   /**

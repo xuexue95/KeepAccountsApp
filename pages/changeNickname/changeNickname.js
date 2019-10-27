@@ -23,7 +23,10 @@ Page({
   save() {
     var token = wx.getStorageSync('token')
     var url = app.globalData.baseUrl + `api/user/profile/update?token=${token}`
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
       url: url,
       data: {
@@ -41,11 +44,10 @@ Page({
             title: '成功',
             icon: 'success',
             duration: 1500,
-            complete: (res) => {
-              setTimeout(function() {
-                wx.navigateBack({})
-              }, 1500)
-            }
+            complete: setTimeout(function() {
+              wx.navigateBack({})
+            }, 1500)
+
           })
         } else {
           wx.showModal({

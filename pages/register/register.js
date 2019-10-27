@@ -6,19 +6,19 @@ Page({
    * 页面的初始数据
    */
   data: {
-    mobile:'',
+    mobile: '',
     captcha_key: '',
     captcha_code: '',
-    nickname:'',
+    nickname: '',
     password: '',
-    showCaptcha:false
+    showCaptcha: false
   },
 
 
-  showCaptcha(){
+  showCaptcha() {
     this.getCaptcha()
     this.setData({
-      showCaptcha:true
+      showCaptcha: true
     })
   },
 
@@ -61,22 +61,25 @@ Page({
   // 获取图片验证码
   getCaptcha() {
     var baseUrl = app.globalData.baseUrl
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
-      url: baseUrl+'api/captcha',
+      url: baseUrl + 'api/captcha',
       data: {},
       header: {
         'content-type': 'application/json'
       },
-      success:(res)=>{
+      success: (res) => {
         wx.hideLoading()
         console.log(res)
-        if(res.data.status){
+        if (res.data.status) {
           this.setData({
             imgUrl: res.data.data.url,
             captcha_key: res.data.data.key
           })
-        } else{
+        } else {
           wx.showModal({
             title: '错误',
             content: res.data.data,
@@ -94,9 +97,12 @@ Page({
     var captcha_key = this.data.captcha_key
     var captcha_code = this.data.captcha_code
     console.log(mobile, captcha_key, captcha_code)
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
-      url: baseUrl+'api/sms/verify',
+      url: baseUrl + 'api/sms/verify',
       method: "POST",
       data: {
         mobile: mobile,
@@ -106,23 +112,23 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
-      success:(res)=>{
+      success: (res) => {
         wx.hideLoading()
         console.log(res)
         if (res.data.status) {
           wx.showModal({
             title: '短信验证码',
             content: res.data.data,
-            showCancel:false
+            showCancel: false
           })
         } else {
-          if (res.data.data == "INVALID_CAPTCHA"){
+          if (res.data.data == "INVALID_CAPTCHA") {
             wx.showModal({
               title: '获取失败',
-              content:'图片验证码错误',
+              content: '图片验证码错误',
               showCancel: false
             })
-          }else{
+          } else {
             wx.showModal({
               title: '获取失败',
               content: res.data.data,
@@ -132,7 +138,7 @@ Page({
           this.setData({
             verify: '',
             captcha_code: '',
-            mobile:''
+            mobile: ''
           })
           this.getCaptcha()
         }
@@ -151,9 +157,12 @@ Page({
     var verify = this.data.verify
     var password = this.data.password
     var nickname = this.data.nickname
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
-      url: baseUrl+ 'api/user/register',
+      url: baseUrl + 'api/user/register',
       method: 'post',
       data: {
         mobile: mobile,
@@ -173,23 +182,24 @@ Page({
           wx.showToast({
             title: '成功',
             icon: 'success',
-            duration: 1000,
+            duration: 1500,
             mask: true,
-            complete: function(res) {
+            complete: setTimeout(() => {
               wx.navigateBack({})
-            },
+            }, 1500)
+
           })
         } else {
           wx.showModal({
             title: '注册失败',
             content: res.data.data,
-            showCancel:false
+            showCancel: false
           })
           that.setData({
             verify: '',
             captcha_code: '',
-            password:'',
-            mobile:''
+            password: '',
+            mobile: ''
           })
           that.getCaptcha()
         }
@@ -201,8 +211,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function(options) {
-  },
+  onLoad: function(options) {},
 
   /**
    * 生命周期函数--监听页面初次渲染完成

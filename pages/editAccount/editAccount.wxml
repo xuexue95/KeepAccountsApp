@@ -42,31 +42,3 @@
 </view>
 
 
-<!-- 提示框 -->
-<view class="cu-modal {{modalName=='DialogModal'?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">提示</view>
-      <navigator url="" open-type="navigateBack" wx:if="{{addSuccess}}">
-      <view class="action" bindtap="hideModal">
-        <text class="cuIcon-close text-red"></text>
-      </view>
-      </navigator>
-      <view class="action" bindtap="hideModal" wx:else>
-        <text class="cuIcon-close text-red"></text>
-      </view>
-    </view>
-    <view class="padding-xl">
-     {{content}}
-    </view>
-    <view class="cu-bar bg-white justify-end">
-      <view class="action">
-      <navigator url="" open-type="navigateBack" wx:if="{{addSuccess}}">
-        <button class="cu-btn bg-green margin-left">确定</button>
-      </navigator>
-      <button class="cu-btn bg-green margin-left" bindtap="hideModal" wx:else>确定</button>
-
-      </view>
-    </view>
-  </view>
-</view>

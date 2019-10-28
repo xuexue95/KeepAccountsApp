@@ -12,7 +12,6 @@ Page({
     this.setData({
       name: event.detail.value
     })
-    console.log(this.data.name)
   },
 
   // 添加类别
@@ -21,7 +20,13 @@ Page({
     var token = wx.getStorageSync('token')
     var type = this.data.type
     var name = this.data.name
-    if (name) {
+    if (!name) {
+      wx.showModal({
+        title: '错误',
+        content: '请正确输入类别名称',
+        showCancel: false,
+      })
+    } else {
       wx.showLoading({ title: '加载中', mask: true })
       wx.request({
         url: baseUrl + 'api/category/create?token=' + token,
@@ -35,29 +40,41 @@ Page({
         header: {
           'content-type': 'application/x-www-form-urlencoded'
         },
-        success:(res)=> {
+        success: (res) => {
           wx.hideLoading()
-          console.log(this.data.TabCur)
-          wx.showToast({
-            title: '添加成功',
-            icon: 'success',
-            duration: 1000,
-            complete:()=>{
-              setTimeout(function(){
-                wx.navigateBack()
-              }, 1000)
-            }
-          })
+          if (res.data.code == 'INVALID_TOKEN') {
+            wx.showModal({
+              title: '添加失败',
+              content: '登录信息失效,请重新登录',
+              showCancel: false,
+              success(res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '/pages/login/login',
+                  })
+                }
+              }
+            })
+          } else if (res.data.status) {
+            wx.showToast({
+              title: '添加成功',
+              icon: 'success',
+              duration: 1000,
+              complete: () => {
+                setTimeout(function () {
+                  wx.navigateBack()
+                }, 1000)
+              }
+            })
+          } else {
+            wx.showModal({
+              title: '添加失败',
+              content: res.data.data,
+            })
+          }
         }
       })
-    } else {
-      wx.showModal({
-        title: '错误',
-        content: '请正确输入类别名称',
-        showCancel:false,
-      })
     }
-
   },
 
   /**

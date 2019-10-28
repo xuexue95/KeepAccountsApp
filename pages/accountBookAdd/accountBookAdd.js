@@ -13,8 +13,8 @@ Page({
     remark: '',
     addSuccess: ''
   },
+  
   PickerChange(e) {
-    console.log(e);
     this.setData({
       index: e.detail.value
     })
@@ -23,33 +23,25 @@ Page({
     })
   },
 
+// 获取用户输入-----------
   getName(e) {
     this.setData({
       name: e.detail.value
     })
-    console.log(this.data.name)
   },
+  
   getBalance(e) {
     this.setData({
       balance: e.detail.value
     })
   },
+
   getRemark(e) {
     this.setData({
       remark: e.detail.value
     })
   },
-
-  showModal(e) {
-    this.setData({
-      modalName: e.currentTarget.dataset.target
-    })
-  },
-  hideModal(e) {
-    this.setData({
-      modalName: null
-    })
-  },
+  // -----------------------
 
   addAccount(e) {
     var baseUrl = app.globalData.baseUrl
@@ -60,8 +52,20 @@ Page({
     var token = wx.getStorageSync('token')
     var url = baseUrl+`api/account/create?token=${token}`
     var content
-   
-    if(type){
+
+    if(!name){
+      wx.showModal({
+        title: '添加失败',
+        content: '请输入账户名称',
+        showCancel: false
+      })
+    } else if(!type){
+      wx.showModal({
+        title: '添加失败',
+        content: '请选择账户类型',
+        showCancel: false
+      })
+    } else {
       wx.showLoading({ title: '加载中', mask: true })
       wx.request({
         url: url,
@@ -77,26 +81,38 @@ Page({
         },
         success: (res) => {
           wx.hideLoading()
-          console.log(res.data)
-          if (res.data.status) {
-            var addSuccess = true
-            content = "添加成功"
+          if (res.data.code == 'INVALID_TOKEN') {
+            wx.showModal({
+              title: '添加失败',
+              content: '登录信息失效,请重新登录',
+              showCancel:false,
+              success(res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '/pages/login/login',
+                  })
+                }
+              }
+            })
+          } else if (res.data.status) {
             app.globalData.accountId = ''
+            wx.showToast({
+              title: '添加成功',
+              icon: 'success',
+              duration: 1500,
+              mask: true,
+              complete: setTimeout(() => {
+                wx.navigateBack({})
+              }, 1500)
+            })
           } else {
-            content = res.data.data
+            wx.showModal({
+              title: '添加失败',
+              content:res.data.data ,
+              showCancel:false
+            })
           }
-          this.setData({
-            content: content,
-            addSuccess: addSuccess
-          })
-          this.showModal(e)
         }
-      })
-    } else {
-      wx.showModal({
-        title: '错误',
-        content: '请选择账户类型',
-        showCancel:false
       })
     }
   },

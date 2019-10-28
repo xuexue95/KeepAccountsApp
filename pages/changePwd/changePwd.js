@@ -42,8 +42,20 @@ Page({
           },
           success: (res) => {
             wx.hideLoading()
-            console.log(res.data)
-            if (res.data.status) {
+            if (res.data.code == 'INVALID_TOKEN') {
+              wx.showModal({
+                title: '添加失败',
+                content: '登录信息失效,请重新登录',
+                showCancel: false,
+                success(res) {
+                  if (res.confirm) {
+                    wx.navigateTo({
+                      url: '/pages/login/login',
+                    })
+                  }
+                }
+              })
+            } else if (res.data.status) {
               wx.showToast({
                 title: '修改成功',
                 icon: 'success',

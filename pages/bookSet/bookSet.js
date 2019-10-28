@@ -43,7 +43,10 @@ Page({
 
   // 获取账簿列表
   getBookList(baseUrl, token) {
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
       url: baseUrl + `api/book?token=${token}`,
       header: {
@@ -51,9 +54,20 @@ Page({
       },
       success: (res) => {
         wx.hideLoading()
-
-        console.log(res.data)
-        if (res.data.status) {
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else if (res.data.status) {
           this.setData({
             bookList: res.data.data
           })
@@ -64,9 +78,6 @@ Page({
           })
           app.globalData.bookList = []
         }
-        console.log({
-          '账簿列表': res.data.data
-        })
       }
     })
   },
@@ -74,37 +85,62 @@ Page({
 
   // 删除账户
   delBook(e) {
-    var book_id = e.currentTarget.dataset.id
-    var baseUrl = app.globalData.baseUrl
-    var token = wx.getStorageSync('token')
-    var url = baseUrl + `api/book/delete?token=${token}`
-    wx.showLoading({ title: '加载中', mask: true })
-    wx.request({
-      url: url,
-      method: 'post',
-      data: {
-        book_id: book_id
-      },
-      header: {
-        "content-type": "application/x-www-form-urlencoded"
-      },
-      success: (res) => {
-        wx.hideLoading()
-        console.log(res.data)
-        if (res.data.status) {
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success',
-            duration: 1000,
-            complete: setTimeout(() => {
-              this.onShow()
-            }, 1000)
+    wx.showModal({
+      title: '提示',
+      content: '确定要删除吗？',
+      cancelText: '取消',
+      confirmText: '确认',
+      success: res => {
+        if (res.confirm) {
+          var book_id = e.currentTarget.dataset.id
+          var baseUrl = app.globalData.baseUrl
+          var token = wx.getStorageSync('token')
+          var url = baseUrl + `api/book/delete?token=${token}`
+          wx.showLoading({
+            title: '加载中',
+            mask: true
           })
-        } else {
-          wx.showModal({
-            title: '删除失败',
-            content: res.data.data,
-            showCancel: false,
+          wx.request({
+            url: url,
+            method: 'post',
+            data: {
+              book_id: book_id
+            },
+            header: {
+              "content-type": "application/x-www-form-urlencoded"
+            },
+            success: (res) => {
+              wx.hideLoading()
+              if (res.data.code == 'INVALID_TOKEN') {
+                wx.showModal({
+                  title: '添加失败',
+                  content: '登录信息失效,请重新登录',
+                  showCancel: false,
+                  success(res) {
+                    if (res.confirm) {
+                      wx.navigateTo({
+                        url: '/pages/login/login',
+                      })
+                    }
+                  }
+                })
+              } else if (res.data.status) {
+                wx.showToast({
+                  title: '删除成功',
+                  icon: 'success',
+                  duration: 1000,
+                  complete: setTimeout(() => {
+                    this.onShow()
+                  }, 1000)
+                })
+              } else {
+                wx.showModal({
+                  title: '删除失败',
+                  content: res.data.data,
+                  showCancel: false,
+                })
+              }
+            }
           })
         }
       }
@@ -117,9 +153,9 @@ Page({
       url: `/pages/bookEdit/bookEdit?id=${id}`,
     })
   },
-  addBook(){
+  addBook() {
     this.setData({
-      modalName:''
+      modalName: ''
     })
     wx.navigateTo({
       url: '/pages/bookAdd/bookAdd',

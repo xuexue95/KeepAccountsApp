@@ -44,7 +44,10 @@ Page({
   getCaptcha() {
     var that = this
     var baseUrl = app.globalData.baseUrl
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
       url: baseUrl + 'api/captcha',
       data: {},
@@ -53,10 +56,18 @@ Page({
       },
       success(res) {
         wx.hideLoading()
-        that.setData({
-          imgUrl: res.data.data.url,
-          captcha_key: res.data.data.key
-        })
+        if (res.data.status) {
+          that.setData({
+            imgUrl: res.data.data.url,
+            captcha_key: res.data.data.key
+          })
+        } else {
+          wx.showModal({
+            title: '获取失败',
+            content: res.data.data,
+            showCancel: false
+          })
+        }
       }
     })
   },
@@ -70,70 +81,83 @@ Page({
     var password = this.data.password
     var captcha_key = this.data.captcha_key
     var captcha_code = this.data.captcha_code
-    wx.showLoading({ title: '加载中', mask: true })
-    wx.request({
-      url: baseUrl + 'api/user/token/mobile',
-      method: 'post',
-      data: {
-        mobile: mobile,
-        password: password,
-        captcha_key: captcha_key,
-        captcha_code: captcha_code
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success: (res) => {
-        wx.hideLoading()
-        console.log(res.data)
-        if (res.data.status) {
-          var token = res.data.data.token
-          console.log({
-            '登录成功': res.data.data
-          })
-          wx.setStorageSync('token', token)
-          app.getUserinfo(token)
-          wx.showToast({
-            title: '登录成功',
-            icon: 'success',
-            duration: 1500,
-            complete: (res) => {
-              setTimeout(function() {
-                wx.navigateBack({})
-              }, 1500)
-            }
-          })
-        } else {
-          if (res.data.code == 'INVALID_CAPTCHA' && this.data.showCaptcha) {
-            wx.showModal({
-              title: '登录失败',
-              content: '验证码错误',
-              showCancel: false
-            })
-          } else if (res.data.code == 'INVALID_CAPTCHA') {
-            this.setData({
-              showCaptcha: true
+    if (!mobile) {
+      wx.showModal({
+        title: '登录失败',
+        content: '请输入手机号码',
+        showCancel: false
+      })
+    } else if (!password) {
+      wx.showModal({
+        title: '登录失败',
+        content: '请输密码',
+        showCancel: false
+      })
+    } else {
+      wx.showLoading({
+        title: '加载中',
+        mask: true
+      })
+      wx.request({
+        url: baseUrl + 'api/user/token/mobile',
+        method: 'post',
+        data: {
+          mobile: mobile,
+          password: password,
+          captcha_key: captcha_key,
+          captcha_code: captcha_code
+        },
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success: (res) => {
+          wx.hideLoading()
+          if (res.data.status) {
+            var token = res.data.data.token
+            wx.setStorageSync('token', token)
+            app.getUserinfo(token)
+            wx.showToast({
+              title: '登录成功',
+              icon: 'success',
+              duration: 1500,
+              complete: (res) => {
+                setTimeout(function() {
+                  wx.navigateBack({})
+                }, 1500)
+              }
             })
           } else {
-            wx.showModal({
-              title: '登录失败',
-              content: res.data.data,
-              showCancel: false
+            if (res.data.code == 'INVALID_CAPTCHA' && this.data.showCaptcha) {
+              wx.showModal({
+                title: '登录失败',
+                content: '验证码错误',
+                showCancel: false
+              })
+            } else if (res.data.code == 'INVALID_CAPTCHA') {
+              this.setData({
+                showCaptcha: true
+              })
+            } else {
+              wx.showModal({
+                title: '登录失败',
+                content: res.data.data,
+                showCancel: false
+              })
+            }
+            this.setData({
+              captcha_code: '',
+              password: ''
             })
           }
-          this.setData({
-            captcha_code: '',
-            password: ''
-          })
         }
-      }
-    })
+      })
+    }
   },
-  
+
   forget() {
     this.setData({
-      mobile:'',
-      password:''
+      mobile: '',
+      password: ''
     })
     wx.navigateTo({
       url: '/pages/forgetPwd/forgetPwd',

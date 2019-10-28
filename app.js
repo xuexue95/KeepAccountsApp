@@ -20,9 +20,6 @@ App({
       },
       success: (res) => {
         this.globalData.user = res.data.data
-        console.log({
-          '用户信息': this.globalData.user
-        })
       }
     })
   },
@@ -49,7 +46,6 @@ App({
     })
 
     var token = wx.getStorageSync('token')
-    console.log('缓存:' + token)
     if (token) {
       this.getUserinfo(token)
     }

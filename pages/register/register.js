@@ -27,7 +27,6 @@ Page({
     this.setData({
       nickname: event.detail.value
     })
-    console.log(this.data.nickname)
   },
 
   // 监听手机号输入
@@ -73,7 +72,6 @@ Page({
       },
       success: (res) => {
         wx.hideLoading()
-        console.log(res)
         if (res.data.status) {
           this.setData({
             imgUrl: res.data.data.url,
@@ -96,54 +94,67 @@ Page({
     var mobile = this.data.mobile
     var captcha_key = this.data.captcha_key
     var captcha_code = this.data.captcha_code
-    console.log(mobile, captcha_key, captcha_code)
-    wx.showLoading({
-      title: '加载中',
-      mask: true
-    })
-    wx.request({
-      url: baseUrl + 'api/sms/verify',
-      method: "POST",
-      data: {
-        mobile: mobile,
-        captcha_key: captcha_key,
-        captcha_code: captcha_code
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success: (res) => {
-        wx.hideLoading()
-        console.log(res)
-        if (res.data.status) {
-          wx.showModal({
-            title: '短信验证码',
-            content: res.data.data,
-            showCancel: false
-          })
-        } else {
-          if (res.data.data == "INVALID_CAPTCHA") {
+    if (!mobile) {
+      wx.showModal({
+        title: '获取失败',
+        content: '请输入手机号',
+        showCancel: false
+      })
+    } else if (!captcha_code) {
+      wx.showModal({
+        title: '获取失败',
+        content: '请输入图形验证码',
+        showCancel: false
+      })
+    } else {
+      wx.showLoading({
+        title: '加载中',
+        mask: true
+      })
+      wx.request({
+        url: baseUrl + 'api/sms/verify',
+        method: "POST",
+        data: {
+          mobile: mobile,
+          captcha_key: captcha_key,
+          captcha_code: captcha_code
+        },
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success: (res) => {
+          wx.hideLoading()
+          if (res.data.status) {
             wx.showModal({
-              title: '获取失败',
-              content: '图片验证码错误',
-              showCancel: false
-            })
-          } else {
-            wx.showModal({
-              title: '获取失败',
+              title: '短信验证码',
               content: res.data.data,
               showCancel: false
             })
+          } else {
+            if (res.data.data == "INVALID_CAPTCHA") {
+              wx.showModal({
+                title: '获取失败',
+                content: '图片验证码错误',
+                showCancel: false
+              })
+            } else {
+              wx.showModal({
+                title: '获取失败',
+                content: res.data.data,
+                showCancel: false
+              })
+            }
+            this.setData({
+              verify: '',
+              captcha_code: '',
+              mobile: ''
+            })
+            this.getCaptcha()
           }
-          this.setData({
-            verify: '',
-            captcha_code: '',
-            mobile: ''
-          })
-          this.getCaptcha()
         }
-      }
-    })
+      })
+    }
+
   },
 
   // 注册
@@ -157,54 +168,73 @@ Page({
     var verify = this.data.verify
     var password = this.data.password
     var nickname = this.data.nickname
-    wx.showLoading({
-      title: '加载中',
-      mask: true
-    })
-    wx.request({
-      url: baseUrl + 'api/user/register',
-      method: 'post',
-      data: {
-        mobile: mobile,
-        verify: verify,
-        password: password,
-        nickname: nickname
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success(res) {
-        wx.hideLoading()
-        console.log(res)
-        if (res.data.status) {
-          showLogin = true
-          modalContent = '注册成功'
-          wx.showToast({
-            title: '成功',
-            icon: 'success',
-            duration: 1500,
-            mask: true,
-            complete: setTimeout(() => {
-              wx.navigateBack({})
-            }, 1500)
+    if(!password){
+      wx.showModal({
+        title: '注册失败',
+        content: '请输入密码',
+        showCancel: false
+      })
+    } else if (!mobile){
+      wx.showModal({
+        title: '注册失败',
+        content: '请输入手机号码',
+        showCancel: false
+      })
+    } else if (!verify) {
+      wx.showModal({
+        title: '注册失败',
+        content: '请输入短信验证码',
+        showCancel: false
+      })
+    } else {
+      wx.showLoading({
+        title: '加载中',
+        mask: true
+      })
+      wx.request({
+        url: baseUrl + 'api/user/register',
+        method: 'post',
+        data: {
+          mobile: mobile,
+          verify: verify,
+          password: password,
+          nickname: nickname
+        },
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success(res) {
+          wx.hideLoading()
+          if (res.data.status) {
+            showLogin = true
+            modalContent = '注册成功'
+            wx.showToast({
+              title: '成功',
+              icon: 'success',
+              duration: 1500,
+              mask: true,
+              complete: setTimeout(() => {
+                wx.navigateBack({})
+              }, 1500)
 
-          })
-        } else {
-          wx.showModal({
-            title: '注册失败',
-            content: res.data.data,
-            showCancel: false
-          })
-          that.setData({
-            verify: '',
-            captcha_code: '',
-            password: '',
-            mobile: ''
-          })
-          that.getCaptcha()
+            })
+          } else {
+            wx.showModal({
+              title: '注册失败',
+              content: res.data.data,
+              showCancel: false
+            })
+            that.setData({
+              verify: '',
+              captcha_code: '',
+              password: '',
+              mobile: ''
+            })
+            that.getCaptcha()
+          }
         }
-      }
-    })
+      })
+    }
   },
 
 

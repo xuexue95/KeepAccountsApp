@@ -106,24 +106,7 @@
         <view class="flex flex-direction margin-tb">
           <button class="cu-btn bg-green lg " bindtap="Bookkeeping" data-target="">记账</button>
         </view>
-
-
       </view>
-    </view>
-  </view>
-</view>
-
-<!-- 模态框 -->
-<view class="cu-modal {{modalName2=='fail'?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">记账失败</view>
-      <view class="action" bindtap="hideModal" data-modalName='modalName2'>
-        <text class="cuIcon-close text-red"></text>
-      </view>
-    </view>
-    <view class="padding-xl">
-      {{modalContent}}
     </view>
   </view>
 </view>

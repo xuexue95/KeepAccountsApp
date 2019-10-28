@@ -130,20 +130,3 @@
       <text class='cuIcon-delete'></text>删除</button>
   </view>
 </view>
-
-
-
-<!-- 模态框 -->
-<view class="cu-modal {{modalName=='fail'?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">修改失败</view>
-      <view class="action" bindtap="hideModal">
-        <text class="cuIcon-close text-red"></text>
-      </view>
-    </view>
-    <view class="padding-xl">
-      {{modalContent}}
-    </view>
-  </view>
-</view>

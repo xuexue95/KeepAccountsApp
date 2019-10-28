@@ -64,7 +64,6 @@ Component({
         month: month
       })
       app.globalData.month = year + '-' + month
-      console.log(app.globalData.month)
       this.triggerEvent('myevent')
     },
 

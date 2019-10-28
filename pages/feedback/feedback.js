@@ -13,7 +13,6 @@ Page({
     this.setData({
       content:event.detail.value
     })
-    console.log(event.detail.value)
   },
 
   contactInput(event){
@@ -38,17 +37,30 @@ Page({
         },
         success: (res) => {
           wx.hideLoading()
-          console.log(res.data)
-          wx.showModal({
-            title: '成功',
-            content: '感谢您的意见',
-            showCancel: false,
-            success: () => {
-              setTimeout(function () {
-                wx.navigateBack({})
-              }, 1000)
-            }
-          })
+          if (res.data.code == 'INVALID_TOKEN') {
+            wx.showModal({
+              title: '添加失败',
+              content: '登录信息失效,请重新登录',
+              showCancel: false,
+              success(res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '/pages/login/login',
+                  })
+                }
+              }
+            })
+          } else if (res.data.status){
+            wx.showToast({
+                title: '提交成功',
+                icon: 'success',
+              success: () => {
+                setTimeout(function () {
+                  wx.navigateBack({})
+                }, 1000)
+              }
+            })
+          }
         }
       })
     } else {

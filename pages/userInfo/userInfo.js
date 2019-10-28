@@ -13,9 +13,7 @@ Page({
     wx.previewImage({
       urls: this.data.imgList,
       current: e.currentTarget.dataset.url
-    });
-    console.log(e.currentTarget.dataset.url)
-    console.log(this.data.imgList)
+    })
   },
 
   changeNickname(){
@@ -62,5 +60,4 @@ Page({
       })
     }
   }
-
 })

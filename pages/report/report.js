@@ -24,7 +24,6 @@ Page({
     this.setData({
       date: date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate()
     })
-    console.log(this.data.date)
   },
 
   tabSelect(e) {
@@ -32,15 +31,12 @@ Page({
       TabCur: e.currentTarget.dataset.id,
       choose: -1,
     })
-    console.log(this.data.choose)
-
   },
 
   DateChange(e) {
     this.setData({
       date: e.detail.value
     })
-    console.log(this.data.date)
   },
 
   ChooseImage() {
@@ -60,7 +56,6 @@ Page({
           })
         }
         var imgurl = res.tempFilePaths[0]
-        console.log(res.tempFilePaths[0])
         this.UploadFile(imgurl)
       }
     });
@@ -70,9 +65,7 @@ Page({
     wx.previewImage({
       urls: this.data.imgList,
       current: e.currentTarget.dataset.url
-    });
-    console.log(e.currentTarget.dataset.url)
-    console.log(this.data.imgList)
+    })
   },
 
   DelImg(e) {
@@ -89,7 +82,6 @@ Page({
             imgList: this.data.imgList
           })
         }
-        console.log(this.data.fileKeys)
       }
     })
   },
@@ -111,7 +103,6 @@ Page({
         var res = JSON.parse(res.data)
         if (res.status) {
           var fileKey = res.data.file.fileKey
-          console.log(fileKey)
           this.data.fileKeys.push(fileKey)
         } else {
           wx.showModal({
@@ -130,59 +121,84 @@ Page({
     })
   },
 
-  Bookkeeping() {
 
+  Bookkeeping() {
     var token = wx.getStorageSync('token')
     var url = app.globalData.baseUrl + 'api/record/create?token=' + token
     if (this.data.index) {
-      var account_id = this.data.accountList[this.data.index].id
-      wx.showLoading({ title: '加载中', mask: true })
-      wx.request({
-        url: url,
-        data: {
-          total_money: this.data.total_money,
-          money: this.data.money,
-          account_id: account_id,
-          category_id: Number(this.data.category_id),
-          date: this.data.date,
-          company_name: this.data.company_name,
-          remark: this.data.remark,
-          image_keys: this.data.fileKeys.join(',')
-        },
-        header: {
-          'content-type': 'application/x-www-form-urlencoded'
-        },
-        success: (res) => {
-          wx.hideLoading()
-          console.log(res.data)
-          if (res.data.status) {
-            wx.showToast({
-              title: '成功',
-              icon: 'success',
-              duration: 1500,
-              complete: (res) => {
-                setTimeout(function() {
-                  wx.navigateBack({})
-                }, 1500)
-              }
-            })
-          } else {
-            this.setData({
-              modalName2: 'fail',
-              modalContent: res.data.data
-            })
+      if(!this.data.total_money){
+        wx.showModal({
+          title: '记账失败',
+          content: '请输入记账金额',
+          showCancel: false
+        })
+      } else if (!this.data.money){
+        wx.showModal({
+          title: '记账失败',
+          content: '请输入实付金额',
+          showCancel: false
+        })
+      } else{
+        var account_id = this.data.accountList[this.data.index].id
+        wx.showLoading({ title: '加载中', mask: true })
+        wx.request({
+          url: url,
+          data: {
+            total_money: this.data.total_money,
+            money: this.data.money,
+            account_id: account_id,
+            category_id: Number(this.data.category_id),
+            date: this.data.date,
+            company_name: this.data.company_name,
+            remark: this.data.remark,
+            image_keys: this.data.fileKeys.join(',')
+          },
+          header: {
+            'content-type': 'application/x-www-form-urlencoded'
+          },
+          success: (res) => {
+            wx.hideLoading()
+            if (res.data.code == 'INVALID_TOKEN') {
+              wx.showModal({
+                title: '添加失败',
+                content: '登录信息失效,请重新登录',
+                showCancel: false,
+                success(res) {
+                  if (res.confirm) {
+                    wx.navigateTo({
+                      url: '/pages/login/login',
+                    })
+                  }
+                }
+              })
+            } else if (res.data.status) {
+              wx.showToast({
+                title: '记账成功',
+                icon: 'success',
+                duration: 1500,
+                complete: (res) => {
+                  setTimeout(function () {
+                    wx.navigateBack({})
+                  }, 1500)
+                }
+              })
+            } else {
+              wx.showModal({
+                title: '记账失败',
+                content: res.data.data,
+                showCancel: false
+              })
+            }
           }
-        }
-      })
+        })
+      }
     } else {
       wx.showModal({
-        title: '失败',
+        title: '记账失败',
         content: '请选择账户',
         showCancel: false
       })
     }
-
-
   },
 
   // 模态框
@@ -190,10 +206,8 @@ Page({
     this.setData({
       modalName: e.currentTarget.dataset.target
     })
-    console.log(this.data.modalName)
   },
   hideModal(e) {
-    console.log(e.currentTarget.dataset.modalname)
     if (e.currentTarget.dataset.modalname == 'bottomModal') {
       this.setData({
         modalName: null,
@@ -206,9 +220,6 @@ Page({
   },
 
   choose(e) {
-    console.log(e.currentTarget.dataset.index)
-    console.log(e.currentTarget.dataset.categoryid)
-    console.log(e.currentTarget.dataset)
     this.setData({
       choose: e.currentTarget.dataset.index,
       modalName: e.currentTarget.dataset.target,
@@ -235,7 +246,6 @@ Page({
           this.setData({
             expenditureList: res.data.data
           })
-          console.log(this.data.expenditureList)
         } else {
           wx.showModal({
             title: '错误',
@@ -267,7 +277,6 @@ Page({
           this.setData({
             incomeList: res.data.data
           })
-          console.log(this.data.incomeList)
         } else {
           wx.showModal({
             title: '错误',
@@ -317,7 +326,6 @@ Page({
   },
 
   accountChange(e) {
-    console.log(e);
     this.setData({
       index: e.detail.value
     })
@@ -328,28 +336,24 @@ Page({
     this.setData({
       total_money: event.detail.value
     })
-    console.log(event.detail.value)
   },
   // 监听实付金额输入
   setMoney(event) {
     this.setData({
       money: event.detail.value
     })
-    console.log(event.detail.value)
   },
   // 监听交易对象输入
   setCompany_name(event) {
     this.setData({
       company_name: event.detail.value
     })
-    console.log(event.detail.value)
   },
   // 监听备注输入
   setRemark(event) {
     this.setData({
       remark: event.detail.value
     })
-    console.log(event.detail.value)
   },
 
 

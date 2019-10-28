@@ -8,7 +8,6 @@ Page({
    */
   data: {
     CustomBar: app.globalData.CustomBar,
-    // accountList: '' //账户列表,
     bookList: []
   },
   // ListTouch触摸开始
@@ -44,7 +43,10 @@ Page({
   // 账户列表
   getAccountList(baseUrl, token) {
     var url = baseUrl + `api/account?token=${token}`
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
       url: url,
       header: {
@@ -52,8 +54,20 @@ Page({
       },
       success: (res) => {
         wx.hideLoading()
-        console.log(res.data)
-        if (res.data.status) {
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else if (res.data.status) {
           this.setData({
             accountList: res.data.data
           })
@@ -62,52 +76,73 @@ Page({
             accountList: []
           })
         }
-        console.log({
-          '账户列表': this.data.accountList
-        })
       }
     })
   },
 
   // 删除账户
   delAccount(e) {
-    var baseUrl = app.globalData.baseUrl
-    var id = e.currentTarget.dataset.id
-    var token = wx.getStorageSync('token')
-    var url = baseUrl + `api/account/delete?id=${id}&token=${token}`
-    wx.showLoading({ title: '加载中', mask: true })
-    wx.request({
-      url: url,
-      header: {
-        "content-type": "application/x-www-form-urlencoded"
-      },
-      success: (res) => {
-        wx.hideLoading()
-        console.log(res.data)
-        if (res.data.status) {
-          app.globalData.accountId = ''
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success',
-            duration: 1000,
-            complete: setTimeout(() => {
-              this.onShow()
-            }, 1000)
+    wx.showModal({
+      title: '提示',
+      content: '确定要删除吗？',
+      cancelText: '取消',
+      confirmText: '确认',
+      success: res => {
+        if (res.confirm) {
+          var baseUrl = app.globalData.baseUrl
+          var id = e.currentTarget.dataset.id
+          var token = wx.getStorageSync('token')
+          var url = baseUrl + `api/account/delete?id=${id}&token=${token}`
+          wx.showLoading({
+            title: '加载中',
+            mask: true
           })
-        } else {
-          wx.showModal({
-            title: '提示',
-            content: '删除失败',
-            showCancel: false,
-            complete: (res) => {
-              if (res.confirm) {
-                console.log('用户点击确定')
-                this.onShow()
+          wx.request({
+            url: url,
+            header: {
+              "content-type": "application/x-www-form-urlencoded"
+            },
+            success: (res) => {
+              wx.hideLoading()
+              if (res.data.code == 'INVALID_TOKEN') {
+                wx.showModal({
+                  title: '添加失败',
+                  content: '登录信息失效,请重新登录',
+                  showCancel: false,
+                  success(res) {
+                    if (res.confirm) {
+                      wx.navigateTo({
+                        url: '/pages/login/login',
+                      })
+                    }
+                  }
+                })
+              } else if (res.data.status) {
+                app.globalData.accountId = ''
+                wx.showToast({
+                  title: '删除成功',
+                  icon: 'success',
+                  duration: 1000,
+                  complete: setTimeout(() => {
+                    this.onShow()
+                  }, 1000)
+                })
+              } else {
+                wx.showModal({
+                  title: '删除失败',
+                  content: res.data.data,
+                  showCancel: false,
+                  complete: (res) => {
+                    if (res.confirm) {
+                      this.onShow()
+                    }
+                  }
+                })
               }
             }
           })
         }
-      }
+      },
     })
   },
 
@@ -122,7 +157,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: function(options) {
     let scrollHeight = wx.getSystemInfoSync().windowHeight;
     this.setData({
       scrollHeight: scrollHeight - this.data.CustomBar - 65
@@ -132,12 +167,12 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () { },
+  onReady: function() {},
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
+  onShow: function() {
     var baseUrl = app.globalData.baseUrl
     let token = wx.getStorageSync('token')
     this.getAccountList(baseUrl, token)

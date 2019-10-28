@@ -13,7 +13,6 @@ Page({
     this.setData({
       name: e.detail.value
     })
-    console.log(this.data.name)
   },
 
   bookAdd(){
@@ -21,7 +20,6 @@ Page({
     var name = this.data.name
     var token = wx.getStorageSync('token')
     var url = baseUrl + `api/book/create?token=${token}`
-    console.log(this.data.name)
     if(this.data.name){ 
       wx.showLoading({ title: '加载中', mask: true })
 
@@ -36,9 +34,20 @@ Page({
         },
         success: (res) => {
           wx.hideLoading()
-
-          console.log(res.data)
-          if (res.data.status) {
+          if (res.data.code == 'INVALID_TOKEN') {
+            wx.showModal({
+              title: '添加失败',
+              content: '登录信息失效,请重新登录',
+              showCancel: false,
+              success(res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '/pages/login/login',
+                  })
+                }
+              }
+            })
+          } else if (res.data.status) {
             wx.showToast({
               title: '添加成功',
               icon: 'success',

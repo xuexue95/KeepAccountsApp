@@ -19,7 +19,6 @@ Page({
   },
 
   onMyEvent: function(e) {
-    console.log(e.detail) // 自定义组件触发事件时提供的detail对象
     this.setData({
       PageCur: e.detail
     })
@@ -48,8 +47,21 @@ Page({
     wx.request({
       url: url,
       success: (res) => {
-        wx.hideLoading()
-        if (res.data.status) {
+        wx.hideLoading() 
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else if (res.data.status) {
           let bookList = res.data.data
           let bookCount = bookList.length
           this.setData({
@@ -58,9 +70,6 @@ Page({
           })
           app.globalData.bookList = bookList
           app.globalData.bookCount = bookCount
-          console.log({
-            '账簿列表': this.data.bookList
-          })
           let bookId = wx.getStorageSync('bookId')
           if (bookList.length !== 0 && !bookId) {
             var bookId = bookList[0].id
@@ -72,7 +81,6 @@ Page({
 
             this.getRecordsList(baseUrl, token)
           }
-          console.log('当前账簿id:' + wx.getStorageSync('bookId'))
         }
       }
     })
@@ -94,10 +102,25 @@ Page({
       },
       success:(res)=>{
         wx.hideLoading()
-        wx.setStorageSync('bookId', book_id)
-        this.setData({
-          bookId:book_id
-        })
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else{
+          wx.setStorageSync('bookId', book_id)
+          this.setData({
+            bookId: book_id
+          })
+        }
       }
     })
   },
@@ -120,11 +143,20 @@ Page({
       },
       success: (res) => {
         wx.hideLoading()
-
-        if (res.data.status) {
-          console.log({
-            '记账列表': res.data.data.list
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
           })
+        } else if (res.data.status) {
           if (res.data.data.list.length !== 0) {
             this.setData({
               RecordsList: res.data.data.list,
@@ -142,7 +174,6 @@ Page({
               money: money
             })
             app.globalData.money = money
-            console.log('收入:' + inMoney + ' 支出:' + outMoney)
           } else {
             var money= {
                 inMoneyInteger: '0',
@@ -154,7 +185,6 @@ Page({
               money: money
             })
             app.globalData.money = money
-            console.log('收入:' + inMoney + ' 支出:' + outMoney)
 
             this.setData({
               hasDeatil: false
@@ -177,7 +207,6 @@ Page({
   },
 
   watchDetail(e) {
-    console.log('单条记录id:' + e.currentTarget.dataset.recordid)
     var id = e.currentTarget.dataset.recordid
 
     wx.navigateTo({

@@ -27,7 +27,6 @@ Page({
           })
         }
         var imgurl = res.tempFilePaths[0]
-        console.log(res.tempFilePaths[0])
         this.UploadFile(imgurl)
 
       }
@@ -39,8 +38,6 @@ Page({
       urls: this.data.imgList,
       current: e.currentTarget.dataset.url
     });
-    console.log(e.currentTarget.dataset.url)
-    console.log(this.data.imgList)
   },
 
   DelImg(e) {
@@ -57,7 +54,6 @@ Page({
             imgList: this.data.imgList
           })
         }
-        console.log(this.data.fileKeys)
       }
     })
   },
@@ -78,53 +74,88 @@ Page({
       formData: null,
       success: (res) => {
         wx.hideLoading()
-        console.log(res)
-        var fileKey = JSON.parse(res.data).data.file.fileKey
-        console.log(fileKey)
-        this.data.fileKeys.push(fileKey)
-        this.setData({
-          fileKey: fileKey
-        })
-      }
-    })
-  },
-  edit() {
-    var token = wx.getStorageSync('token')
-    var url = app.globalData.baseUrl + `api/user/profile/update?token=${token}`
-    wx.showLoading({
-      title: '加载中',
-      mask: true
-    })
-    wx.request({
-      url: url,
-      data: {
-        avatar: this.data.fileKey
-      },
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success: (res) => {
-        wx.hideLoading()
-        console.log(res.data)
-        if (res.data.status) {
-          app.getUserinfo(token)
-          wx.showToast({
-            title: '成功',
-            icon: 'success',
-            duration: 1500,
-            complete: setTimeout(function() {
-              wx.navigateBack({})
-            }, 1500)
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
           })
         } else {
-          wx.showModal({
-            title: '错误',
-            content: '修改失败',
-            showCancel: false
+          var fileKey = JSON.parse(res.data).data.file.fileKey
+          this.data.fileKeys.push(fileKey)
+          this.setData({
+            fileKey: fileKey
           })
         }
       }
     })
+  },
+
+
+  edit() {
+    var token = wx.getStorageSync('token')
+    var url = app.globalData.baseUrl + `api/user/profile/update?token=${token}`
+    if (!this.data.fileKey){
+      wx.showModal({
+        title: '错误',
+        content: '请选择头像',
+        showCancel: false
+      })
+    } else {
+      wx.showLoading({
+        title: '加载中',
+        mask: true
+      })
+      wx.request({
+        url: url,
+        data: {
+          avatar: this.data.fileKey
+        },
+        header: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        success: (res) => {
+          wx.hideLoading()
+          if (res.data.code == 'INVALID_TOKEN') {
+            wx.showModal({
+              title: '添加失败',
+              content: '登录信息失效,请重新登录',
+              showCancel: false,
+              success(res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '/pages/login/login',
+                  })
+                }
+              }
+            })
+          } else if (res.data.status) {
+            app.getUserinfo(token)
+            wx.showToast({
+              title: '成功',
+              icon: 'success',
+              duration: 1500,
+              complete: setTimeout(function () {
+                wx.navigateBack({})
+              }, 1500)
+            })
+          } else {
+            wx.showModal({
+              title: '错误',
+              content: res.data.data,
+              showCancel: false
+            })
+          }
+        }
+      })
+    }
   },
 
   /**

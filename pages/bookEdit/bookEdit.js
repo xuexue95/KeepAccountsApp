@@ -15,7 +15,6 @@ Page({
     this.setData({
       new_book_name: e.detail.value
     })
-    console.log(this.data.book_name)
   },
 
   // 获取账簿详情
@@ -35,8 +34,6 @@ Page({
       },
       success: (res) => {
         wx.hideLoading()
-
-        console.log(res.data)
         if (res.data.status) {
           this.setData({
             bookInfo: res.data.data,
@@ -63,43 +60,61 @@ Page({
     var token = wx.getStorageSync('token')
     var baseUrl = app.globalData.baseUrl
     var url = baseUrl + `api/book/update?token=${token}`
-    console.log(url, this.data.book_name)
-    wx.showLoading({ title: '加载中', mask: true })
-
-    wx.request({
-      method:'post',
-      url: url,
-      data:{
-        book_id: book_id,
-        book_name: this.data.new_book_name
-      },
-      header:{
-        "content-type": "application/x-www-form-urlencoded"        
-      },
-      success:(res)=>{
-        wx.hideLoading()
-
-        console.log(res.data)
-        if(res.data.status){
-          wx.showToast({
-            title: '修改成功',
-            icon: 'success',
-            duration: 1000,
-            complete(){
-              setTimeout(function(){
-                wx.navigateBack({})
-              },1000)
-            }
-          })
-        } else {
-          wx.showModal({
-            title: '修改失败',
-            content: res.data.data,
-            showCancel:false,
-          })
+    var booke_name = this.data.new_book_name
+    if (!booke_name){
+      wx.showModal({
+        title: '修改失败',
+        content: '账簿名不能为空' ,
+        showCancel: false,
+      })
+    } else{
+      wx.showLoading({ title: '加载中', mask: true })
+      wx.request({
+        method: 'post',
+        url: url,
+        data: {
+          book_id: book_id,
+          book_name: this.data.new_book_name
+        },
+        header: {
+          "content-type": "application/x-www-form-urlencoded"
+        },
+        success: (res) => {
+          wx.hideLoading()
+          if (res.data.code == 'INVALID_TOKEN') {
+            wx.showModal({
+              title: '添加失败',
+              content: '登录信息失效,请重新登录',
+              showCancel: false,
+              success(res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '/pages/login/login',
+                  })
+                }
+              }
+            })
+          } else if (res.data.status) {
+            wx.showToast({
+              title: '修改成功',
+              icon: 'success',
+              duration: 1000,
+              complete() {
+                setTimeout(function () {
+                  wx.navigateBack({})
+                }, 1000)
+              }
+            })
+          } else {
+            wx.showModal({
+              title: '修改失败',
+              content: res.data.data,
+              showCancel: false,
+            })
+          }
         }
-      }
-    })
+      })
+    }
   },
 
 

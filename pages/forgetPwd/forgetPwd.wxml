@@ -29,33 +29,3 @@
 <view class=" flex flex-direction margin-lr">
   <button class="cu-btn bg-green lg" bindtap="save">确定</button>
 </view>
-
-<!-- 短信验证码模态框 -->
-<view class="cu-modal {{modalName=='verify'?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">短信验证码</view>
-      <view class="action" bindtap="hideModal">
-        <text class="cuIcon-close text-red"></text>
-      </view>
-    </view>
-    <view class="padding-xl">
-      {{modalContent}}
-    </view>
-  </view>
-</view>
-
-<!-- 模态框 -->
-<view class="cu-modal {{modalName=='register'?'show':''}}">
-  <view class="cu-dialog">
-    <view class="cu-bar bg-white justify-end">
-      <view class="content">提示</view>
-      <view class="action" bindtap="hideModal">
-        <text class="cuIcon-close text-red"></text>
-      </view>
-    </view>
-    <view class="padding-xl">
-      {{modalContent}}
-    </view>
-  </view>
-</view>

@@ -40,7 +40,6 @@ Component({
       this.setData({
         modalName: name
       })
-      console.log(this.data.modalName)
     },
     hideModal(e) {
       this.setData({
@@ -85,7 +84,6 @@ Component({
       var token = wx.getStorageSync('token')
       var baseUrl = app.globalData.baseUrl
       if (token) {
-        app.globalData.user = ''
         wx.showLoading({
           title: '加载中',
           mask: true
@@ -94,9 +92,20 @@ Component({
           url: baseUrl + 'api/user/logout?token=' + token,
           success: (res) => {
             wx.hideLoading()
-            console.log(res.data)
-            if (res.data.status) {
-
+            if (res.data.code == 'INVALID_TOKEN') {
+              wx.showModal({
+                title: '添加失败',
+                content: '登录信息失效,请重新登录',
+                showCancel: false,
+                success(res) {
+                  if (res.confirm) {
+                    wx.navigateTo({
+                      url: '/pages/login/login',
+                    })
+                  }
+                }
+              })
+            } else if (res.data.status) {
               wx.removeStorageSync("token")
               wx.removeStorageSync('bookId')
               app.globalData.money = {
@@ -120,6 +129,7 @@ Component({
             }
           }
         })
+        app.globalData.user = ''
       } else {
         wx.showModal({
           title: '未登录',
@@ -127,7 +137,6 @@ Component({
           showCancel:false
         })
       }
-
     }
   },
 

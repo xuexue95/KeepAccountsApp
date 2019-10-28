@@ -26,36 +26,39 @@ Page({
     })
   },
 
-  // 获取输入
+
+  // 获取用户输入-------------------
   moneyInput(e) {
     this.setData({
       total_money: e.detail.value
     })
-    console.log(e.detail.value)
   },
   companyInput(e) {
     this.setData({
       company_name: e.detail.value
     })
-    console.log(e.detail.value)
   },
   remarkInput(e) {
     this.setData({
       remark: e.detail.value
     })
-    console.log(e.detail.value)
   },
   dateInput(e) {
     this.setData({
       date: e.detail.value
     })
   },
+  // -------------------------------
+
 
   // 获取账单详情
   getBillDetail(token, id) {
 
     var url = app.globalData.baseUrl + `api/record/detail?id=${id}&token=${token}`
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
       url: url,
       header: {
@@ -63,29 +66,42 @@ Page({
       },
       success: (res) => {
         wx.hideLoading()
-
-        console.log({
-          '记录详情': res.data.data
-        })
-        var imgRes = res.data.data.items[0].images
-        var imgList = []
-        for (var i in imgRes) {
-          imgList.push(imgRes[i].original)
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else if (res.data.status) {
+          var imgRes = res.data.data.items[0].images
+          var imgList = []
+          for (var i in imgRes) {
+            imgList.push(imgRes[i].original)
+          }
+          this.setData({
+            detail: res.data.data,
+            total_money: res.data.data.total_money,
+            remark: res.data.data.remark,
+            company_name: res.data.data.company_name,
+            imgList: imgList,
+            itemId: res.data.data.items[0].id,
+            account_id: res.data.data.items[0].account_id,
+            date: res.data.data.items[0].date
+          })
+        } else {
+          wx.showModal({
+            title: '错误',
+            content: res.data.data,
+            showCancel: false,
+          })
         }
-        this.setData({
-          detail: res.data.data,
-          total_money: res.data.data.total_money,
-          remark: res.data.data.remark,
-          company_name: res.data.data.company_name,
-          imgList: imgList,
-          itemId: res.data.data.items[0].id,
-          account_id: res.data.data.items[0].account_id,
-          date: res.data.data.items[0].date
-
-        })
-        console.log({
-          '图片列表': this.data.imgList
-        })
       }
     })
   },
@@ -95,8 +111,9 @@ Page({
       urls: this.data.imgList,
       current: e.currentTarget.dataset.url,
     });
-    console.log(e.currentTarget.dataset.url)
   },
+
+
   ChooseImage() {
     var that = this
     wx.chooseImage({
@@ -113,10 +130,11 @@ Page({
             imgList: res.tempFilePaths
           })
         }
-        console.log(this.data.imgList)
       }
-    });
+    })
   },
+
+
   DelImg(e) {
     wx.showModal({
       title: '提示',
@@ -131,14 +149,18 @@ Page({
             imgList: this.data.imgList
           })
         }
-        console.log(this.data.fileKeys)
       }
     })
   },
+
+
   UploadFile(imgurl) {
     var token = wx.getStorageSync('token')
     var url = app.globalData.baseUrl + 'api/upload/image?token=' + token
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
 
     wx.uploadFile({
       url: url,
@@ -150,10 +172,23 @@ Page({
       formData: null,
       success: (res) => {
         wx.hideLoading()
-
-        var fileKey = JSON.parse(res.data).data.file.fileKey
-        console.log(fileKey)
-        this.data.fileKeys.push(fileKey)
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else {
+          var fileKey = JSON.parse(res.data).data.file.fileKey
+          this.data.fileKeys.push(fileKey)
+        }
       }
     })
   },
@@ -165,9 +200,12 @@ Page({
     var url1 = app.globalData.baseUrl + `api/record/update?id=${id}&token=${token}`
     var itemId = this.data.itemId
     var url2 = app.globalData.baseUrl + `api/record/item/update?itemId=${itemId}&token=${token}`
-    console.log(itemId)
+
     if (this.data.total_money) {
-      wx.showLoading({ title: '加载中', mask: true })
+      wx.showLoading({
+        title: '加载中',
+        mask: true
+      })
 
       wx.request({
         url: url1,
@@ -182,12 +220,25 @@ Page({
         },
         success: (res) => {
           wx.hideLoading()
-
-          console.log(res.data)
-          if (res.data.status) {
-            wx.showLoading({ title: '加载中', mask: true })
-            console.log(this.data.accountList,this.data.index)
-            if(this.data.index){
+          if (res.data.code == 'INVALID_TOKEN') {
+            wx.showModal({
+              title: '修改失败',
+              content: '登录信息失效,请重新登录',
+              showCancel: false,
+              success(res) {
+                if (res.confirm) {
+                  wx.navigateTo({
+                    url: '/pages/login/login',
+                  })
+                }
+              }
+            })
+          } else if (res.data.status) {
+            wx.showLoading({
+              title: '加载中',
+              mask: true
+            })
+            if (this.data.index) {
               var account_id = this.data.accountList[this.data.index].id
             } else {
               var account_id = this.data.account_id
@@ -205,8 +256,6 @@ Page({
               },
               complete: (res) => {
                 wx.hideLoading()
-
-                console.log(res.data)
                 if (res.data.status) {
                   wx.showToast({
                     title: '修改成功',
@@ -219,24 +268,26 @@ Page({
                     }
                   })
                 } else {
-                  this.setData({
-                    modalName: 'fail',
-                    modalContent: res.data.data
+                  wx.showModal({
+                    title: '修改失败',
+                    content: res.data.data,
+                    showCancel: false
                   })
                 }
               }
             })
           } else {
-            this.setData({
-              modalName: 'fail',
-              modalContent: res.data.data
+            wx.showModal({
+              title: '修改失败',
+              content: res.data.data,
+              showCancel: false
             })
           }
         }
       })
     } else {
       wx.showModal({
-        title: '错误',
+        title: '修改失败',
         content: '金额不能为空',
         showCancel: false
       })
@@ -244,35 +295,60 @@ Page({
   },
 
   delete() {
-    var token = wx.getStorageSync('token')
-    var id = this.data.id
-    var url = app.globalData.baseUrl + `api/record/delete?id=${id}&token=${token}`
-    wx.showLoading({ title: '加载中', mask: true })
-
-    wx.request({
-      url: url,
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success:(res)=>{
-        wx.hideLoading()
-
-        console.log(res.data)
-        if(res.data.status){
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success',
-            duration: 1500,
-            complete: (res) => {
-              setTimeout(function () {
-                wx.navigateBack({})
-              }, 1500)
-            }
+    wx.showModal({
+      title: '提示',
+      content: '确定要删除吗？',
+      cancelText: '取消',
+      confirmText: '确认',
+      success: res => {
+        if (res.confirm) {
+          var token = wx.getStorageSync('token')
+          var id = this.data.id
+          var url = app.globalData.baseUrl + `api/record/delete?id=${id}&token=${token}`
+          wx.showLoading({
+            title: '加载中',
+            mask: true
           })
-        } else{
-          this.setData({
-            modalName: 'fail',
-            modalContent: res.data.data
+
+          wx.request({
+            url: url,
+            header: {
+              'content-type':'application/x-www-form-urlencoded'
+            },
+            success: (res) => {
+              wx.hideLoading()
+              if (res.data.code == 'INVALID_TOKEN') {
+                wx.showModal({
+                  title: '删除失败',
+                  content: '登录信息失效,请重新登录',
+                  showCancel: false,
+                  success(res) {
+                    if (res.confirm) {
+                      wx.navigateTo({
+                        url: '/pages/login/login',
+                      })
+                    }
+                  }
+                })
+              } else if (res.data.status) {
+                wx.showToast({
+                  title: '删除成功',
+                  icon: 'success',
+                  duration: 1000,
+                  complete: (res) => {
+                    setTimeout(function() {
+                      wx.navigateBack({})
+                    }, 1000)
+                  }
+                })
+              } else {
+                wx.showModal({
+                  title: '删除失败',
+                  content: res.data.data,
+                  showCancel: false,
+                })
+              }
+            }
           })
         }
       }
@@ -282,7 +358,10 @@ Page({
 
   // 获取账户列表
   getAccountList(token) {
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
 
     wx.request({
       url: app.globalData.baseUrl + `api/account?token=${token}`,
@@ -291,11 +370,21 @@ Page({
       },
       success: (res) => {
         wx.hideLoading()
-
-        if (res.data.status) {
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '提示',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else if (res.data.status) {
           let accountList = res.data.data
-
-          console.log(accountList)
           let picker = []
           for (let i in accountList) {
             picker.push(accountList[i].name)
@@ -307,13 +396,8 @@ Page({
         } else {
           wx.showModal({
             title: '错误',
-            content: '账户列表数据请求失败,请重新登录',
+            content: res.data.data,
             showCancel: false,
-            complete: () => {
-              wx.navigateTo({
-                url: '/pages/login/login',
-              })
-            }
           })
         }
       }
@@ -321,7 +405,6 @@ Page({
   },
 
   accountChange(e) {
-    console.log(e);
     this.setData({
       index: e.detail.value
     })
@@ -354,41 +437,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function() {
 
   }
 })

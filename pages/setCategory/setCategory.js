@@ -1,7 +1,7 @@
 // pages/setCategory/setCategory.js
 var app = getApp()
 Page({
-  
+
   /**
    * 页面的初始数据
    */
@@ -14,52 +14,74 @@ Page({
   tabSelect(e) {
     this.setData({
       TabCur: e.currentTarget.dataset.id,
-      modalName:''
+      modalName: ''
     })
   },
   addCategory(e) {
     var url = '/pages/addCategory/addCategory?TabCur=' + this.data.TabCur
-    console.log(url)
     wx.navigateTo({
       url: url,
     })
   },
 
   delCategory(e) {
-    var baseUrl = app.globalData.baseUrl
-    console.log(e.currentTarget.dataset.categoryid)
-    var id = e.currentTarget.dataset.categoryid
-    var token = wx.getStorageSync('token')
-    var url = baseUrl + `api/category/delete?id=${id}&token=${token}`
-    console.log(url)
-    wx.showLoading({ title: '加载中', mask: true })
-    wx.request({
-      url: url,
-      method: 'POST',
-      data: {},
-      header: {
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      success:(res)=>{
-        wx.hideLoading()
-        console.log(res.data)
-        if(res.data.status){
-          wx.showToast({
-            title: '删除成功',
-            icon: 'success',
-            duration: 1000,
-            success: setTimeout(() => {
-              this.onShow()
-            }, 1000)
+    wx.showModal({
+      title: '提示',
+      content: '确定要删除吗？',
+      cancelText: '取消',
+      confirmText: '确认',
+      success: res => {
+        if (res.confirm) {
+          var baseUrl = app.globalData.baseUrl
+          var id = e.currentTarget.dataset.categoryid
+          var token = wx.getStorageSync('token')
+          var url = baseUrl + `api/category/delete?id=${id}&token=${token}`
+          wx.showLoading({
+            title: '加载中',
+            mask: true
           })
-        } else {
-          wx.showModal({
-            title: '提示',
-            content: '删除失败',
-            showCancel: false,
+          wx.request({
+            url: url,
+            method: 'POST',
+            data: {},
+            header: {
+              'content-type': 'application/x-www-form-urlencoded'
+            },
             success: (res) => {
-              if (res.confirm) {
-                this.onShow()
+              wx.hideLoading()
+              if (res.data.code == 'INVALID_TOKEN') {
+                wx.showModal({
+                  title: '添加失败',
+                  content: '登录信息失效,请重新登录',
+                  showCancel: false,
+                  success(res) {
+                    if (res.confirm) {
+                      wx.navigateTo({
+                        url: '/pages/login/login',
+                      })
+                    }
+                  }
+                })
+              } else if (res.data.status) {
+                wx.showToast({
+                  title: '删除成功',
+                  icon: 'success',
+                  duration: 1000,
+                  success: setTimeout(() => {
+                    this.onShow()
+                  }, 1000)
+                })
+              } else {
+                wx.showModal({
+                  title: '提示',
+                  content: '删除失败',
+                  showCancel: false,
+                  success: (res) => {
+                    if (res.confirm) {
+                      this.onShow()
+                    }
+                  }
+                })
               }
             }
           })
@@ -99,7 +121,10 @@ Page({
   },
   //  获取支出分类
   getExpenditureList(baseUrl, token) {
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
       url: baseUrl + 'api/category?token=' + token,
       method: 'post',
@@ -109,20 +134,37 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded'
       },
-      success:(res)=> {
+      success: (res) => {
         wx.hideLoading()
-        app.globalData.expenditureList = res.data
-        this.setData({
-          expenditureList: res.data.data
-        })
-        console.log(this.data.expenditureList)
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else {
+          app.globalData.expenditureList = res.data
+          this.setData({
+            expenditureList: res.data.data
+          })
+        }
       }
     })
   },
 
   // 获取收入分类
   getIncomeList(baseUrl, token) {
-    wx.showLoading({ title: '加载中', mask: true })
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     wx.request({
       url: baseUrl + 'api/category?token=' + token,
       method: 'post',
@@ -132,13 +174,27 @@ Page({
       header: {
         'content-type': 'application/x-www-form-urlencoded' // 默认值
       },
-      success:(res)=> {
+      success: (res) => {
         wx.hideLoading()
-        app.globalData.incomeList = res.data
-        this.setData({
-          incomeList: res.data.data
-        })
-        console.log(this.data.incomeList)
+        if (res.data.code == 'INVALID_TOKEN') {
+          wx.showModal({
+            title: '添加失败',
+            content: '登录信息失效,请重新登录',
+            showCancel: false,
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({
+                  url: '/pages/login/login',
+                })
+              }
+            }
+          })
+        } else{
+          app.globalData.incomeList = res.data
+          this.setData({
+            incomeList: res.data.data
+          })
+        }
       }
     })
   },
@@ -147,9 +203,8 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function(options) {
-      this.setData({
-        TabCur: options.TabCur,
-   
+    this.setData({
+      TabCur: options.TabCur,
     })
     let scrollHeight = wx.getSystemInfoSync().windowHeight;
     this.setData({
